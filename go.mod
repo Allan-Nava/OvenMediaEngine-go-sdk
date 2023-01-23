@@ -1,6 +1,6 @@
 module github.com/Allan-Nava/OvenMediaEngine-go-sdk
 
-go 1.19
+go 1.18
 
 require (
 	github.com/go-resty/resty/v2 v2.7.0 // indirect
