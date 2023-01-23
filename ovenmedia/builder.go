@@ -6,10 +6,10 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type Builder OvenMedia
-
+//type Builder OvenMedia
 //
-func (f *Builder) Build(url string, debug bool) (*OvenMedia, error) {
+//
+func BuildOven(url string, debug bool) (*OvenMedia, error) {
 	ovenClient := &OvenMedia{
 		Url:        url,
 		RestClient: resty.New(),
