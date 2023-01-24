@@ -38,25 +38,24 @@ func (o *OvenMedia) CreateVirtualHost(name string) error {
 }
 
 // GET http://1.2.3.4:8081/v1/vhosts
-func (o *OvenMedia) ResponseVirtualList()(*ResponseVirtualList, error){
+func (o *OvenMedia) ResponseVirtualList() (*ResponseVirtualList, error) {
 	//
 	resp, err := o.RestClient.R().
 		SetHeader("Accept", "application/json").
-		SetBody(body).
 		SetResult(ResponseVirtualList{}).
 		Post(o.Url)
 	//
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
 		o.DebugPrint(fmt.Sprintf("resp -> %v", resp))
-		return errors.New(resp.Status())
+		return nil, errors.New(resp.Status())
 	}
 	//
 	virtualList := resp.Result().(*ResponseVirtualList)
 	if virtualList == nil {
-		return errors.New("could not get all virtual host")
+		return nil, errors.New("could not get all virtual host")
 	}
-	return nil
+	return virtualList, nil
 }
