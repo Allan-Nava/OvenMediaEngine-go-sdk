@@ -27,3 +27,10 @@ func Test_InitOvenMedia(t *testing.T) {
 	}
 	return
 }
+
+func Test_HealthCheck(t *testing.T) {
+	o := GetOvenMedia()
+	if err := o.HealthCheck(); err != nil {
+		panic(err)
+	}
+}
