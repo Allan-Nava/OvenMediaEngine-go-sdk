@@ -16,6 +16,7 @@ type OvenMedia struct {
 
 type IOvenMediaClient interface {
 	HealthCheck() error
+	CreateVirtualHost(name string) error
 }
 
 func (o *OvenMedia) HealthCheck() error {
@@ -29,7 +30,7 @@ func (o *OvenMedia) HealthCheck() error {
 	//
 	if !strings.Contains(resp.Status(), "200") {
 		o.DebugPrint(fmt.Sprintf("resp -> %v", resp))
-		return errors.New("Could not connect haproxy")
+		return errors.New("could not connect OvenMediaEngine")
 	}
 	return nil
 }
