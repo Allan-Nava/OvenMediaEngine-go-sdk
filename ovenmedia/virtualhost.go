@@ -38,7 +38,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) error {
 }
 
 // GET http://1.2.3.4:8081/v1/vhosts
-func (o *OvenMedia) ResponseVirtualList() (*ResponseVirtualList, error) {
+func (o *OvenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
 	//
 	resp, err := o.RestClient.R().
 		SetHeader("Accept", "application/json").
