@@ -14,3 +14,9 @@ type VirtualHost struct {
 type VRHostResponse struct {
 	Name string `json:"name"`
 }
+
+type ResponseVirtualList struct {
+	Message    string         	`json:"message"`
+	Response   []string 		`json:"response"`
+	StatusCode int            `json:"statusCode"`
+}

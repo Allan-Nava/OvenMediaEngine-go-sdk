@@ -14,6 +14,12 @@ func BuildOven(url string, debug bool) (*OvenMedia, error) {
 		Url:        url,
 		RestClient: resty.New(),
 	}
+	// You can override all below settings and options at request level if you want to
+	//--------------------------------------------------------------------------------
+	// Host URL for all request. So you can use relative URL in the request
+	ovenClient.RestClient.SetHostURL(url)
+	// Headers for all request
+	ovenClient.RestClient.SetHeader("ome-access-token", "Basic ")
 	//
 	if debug {
 		ovenClient.RestClient.SetDebug(true)

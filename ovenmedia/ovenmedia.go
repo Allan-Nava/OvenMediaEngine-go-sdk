@@ -17,6 +17,7 @@ type OvenMedia struct {
 type IOvenMediaClient interface {
 	HealthCheck() error
 	CreateVirtualHost(name string) error
+	GetAllVirtualHosts() (*ResponseVirtualList, error)
 }
 
 func (o *OvenMedia) HealthCheck() error {
@@ -34,3 +35,8 @@ func (o *OvenMedia) HealthCheck() error {
 	}
 	return nil
 }
+
+// SetHeader(header string, value string) *resty.Request
+/*func (o *OvenMedia) SetHeaderAuthorization() *resty.Request {
+	return o.RestClient.R().SetHeader("ome-access-token", "Basic ")// need to be finish
+}*/
