@@ -2,6 +2,7 @@ package ovenmedia
 
 import (
 	"fmt"
+	"errors"
 
 	"github.com/go-resty/resty/v2"
 )
