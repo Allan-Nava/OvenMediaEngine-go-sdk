@@ -76,4 +76,13 @@ func (h *HeaderConfigurator) CreateBasicAuthHeaderEncoded(base64EncodedToken str
 	h.Headers["Authorization"] = "Basic " + base64EncodedToken
 }
 
+
+func (h *HeaderConfigurator) CreateOmeBasicAuthHeader(username string, password string) {
+	h.Headers["ome-access-token"] = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
+}
+
+func (h *HeaderConfigurator) CreateOmeBasicAuthHeaderEncoded(base64EncodedToken string) {
+	h.Headers["ome-access-token"] = "Basic " + base64EncodedToken
+}
+
 //
