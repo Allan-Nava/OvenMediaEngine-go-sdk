@@ -15,6 +15,7 @@ type OvenMedia struct {
 }
 
 type IOvenMediaClient interface {
+	IsDebug() bool
 	HealthCheck() error
 	// VirtualHost
 	CreateVirtualHost(name string) (*ResponseVirtualHost, error)
@@ -39,6 +40,11 @@ func (o *OvenMedia) HealthCheck() error {
 		return errors.New("could not connect OvenMediaEngine")
 	}
 	return nil
+}
+
+// 
+func (o *OvenMedia) IsDebug() bool {
+	return o.debug
 }
 
 // Resty Methods
