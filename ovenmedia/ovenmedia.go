@@ -27,17 +27,9 @@ type IOvenMediaClient interface {
 }
 
 func (o *OvenMedia) HealthCheck() error {
-	resp, err := o.restClient.R().
-		SetHeader("Accept", "application/json").
-		Get(o.Url)
-	//
+	_, err := restyGet(o.Url, nil)
 	if err != nil {
-		return err
-	}
-	//
-	if !strings.Contains(resp.Status(), "200") {
-		o.debugPrint(fmt.Sprintf("resp -> %v", resp))
-		return errors.New("could not connect OvenMediaEngine")
+		return nil, err
 	}
 	return nil
 }
