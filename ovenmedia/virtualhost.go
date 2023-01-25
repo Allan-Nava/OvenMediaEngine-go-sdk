@@ -16,7 +16,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) error {
 			},
 		},
 	}
-	resp, err := RestyPost("/v1/hosts", body)
+	resp, err := o.RestyPost("/v1/hosts", body)
     if err != nil{
         return err
     }
@@ -31,7 +31,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) error {
 // GET http://1.2.3.4:8081/v1/vhosts
 func (o *OvenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
 	//
-	resp, err := RestyGet("/v1/hosts")
+	resp, err := o.RestyGet("/v1/hosts")
     if err != nil{
         return err
     }
