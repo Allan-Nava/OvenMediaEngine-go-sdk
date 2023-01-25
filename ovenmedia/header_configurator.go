@@ -6,6 +6,12 @@ type HeaderConfigurator struct {
 	Headers map[string]string
 }
 
+func InitHeaderConfigurator() *HeaderConfigurator {
+	return &HeaderConfigurator{
+		Headers: map[string]string{},
+	}
+}
+
 func (h *HeaderConfigurator) SetHeader(key string, value string) {
 	h.Headers[key] = value
 }

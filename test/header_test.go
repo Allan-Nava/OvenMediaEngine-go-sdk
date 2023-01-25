@@ -10,7 +10,7 @@ import (
 func Test_HeaderInit(t *testing.T) {
 	fmt.Println("header init()")
 	//
-	headerconfig := &ovenmedia.HeaderConfigurator{}
+	headerconfig := ovenmedia.InitHeaderConfigurator()
 	headerconfig.SetHeader("Content-Type", "application/json")
 	headerconfig.SetHeaders(
 		map[string]string{
