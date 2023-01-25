@@ -13,27 +13,45 @@ const (
 	V1_HOSTS_STOP_PUSH_NAME = "/v1/vhosts/%s/apps/%s:stopPush"
 	//http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:pushes
 	V1_HOSTS_PUSHES_NAME = "/v1/vhosts/%s/apps/%s:pushes"
+	//
+	// RECORDING
+	// http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:startRecord
+	V1_HOSTS_START_RECORD_NAME = "/v1/vhosts/%s/apps/%s:startRecord"
+	//http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:stopRecord
+	V1_HOSTS_STOP_RECORD_NAME = "/v1/vhosts/%s/apps/%s:stopRecord"
+	// http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:records
+	V1_HOSTS_RECORDS_NAME = "/v1/vhosts/%s/apps/%s:records"
 )
 
 var (
 	//
 	GET_VHOSTS_BY_NAME = func(vhostName string) string {
-		// V1_HOSTS = "/v1/vhosts"+
 		return fmt.Sprintf(V1_HOSTS_NAME, vhostName)
 	}
-	//http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:startPush
+	// Get all vhost start push by name
 	GET_VHOSTS_PUSH_BY_NAME = func(vhostName string, appName string) string {
-		// V1_HOSTS = "/v1/vhosts"+
 		return fmt.Sprintf(V1_HOSTS_START_PUSH_NAME, vhostName, appName)
 	}
-	//
+	// Get all vhost stop by name
 	GET_VHOSTS_STOP_BY_NAME = func(vhostName string, appName string) string {
-		// V1_HOSTS = "/v1/vhosts"+
+		//
 		return fmt.Sprintf(V1_HOSTS_STOP_PUSH_NAME, vhostName, appName)
 	}
 	//
 	GET_VHOSTS_PUSHES_BY_NAME = func(vhostName string, appName string) string {
 		return fmt.Sprintf(V1_HOSTS_PUSHES_NAME, vhostName, appName)
+	}
+	//
+	GET_VHOSTS_START_RECORDED_BY_NAME = func(vhostName string, appName string) string {
+		return fmt.Sprintf(V1_HOSTS_START_RECORD_NAME, vhostName, appName)
+	}
+	//
+	GET_VHOSTS_STOP_RECORDED_BY_NAME = func(vhostName string, appName string) string {
+		return fmt.Sprintf(V1_HOSTS_STOP_RECORD_NAME, vhostName, appName)
+	}
+	//
+	GET_VHOSTS_RECORDS_BY_NAME = func(vhostName string, appName string) string {
+		return fmt.Sprintf(V1_HOSTS_RECORDS_NAME, vhostName, appName)
 	}
 	//
 )
