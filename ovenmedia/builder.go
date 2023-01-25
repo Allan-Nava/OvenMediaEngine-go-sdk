@@ -9,7 +9,7 @@ import (
 //type Builder OvenMedia
 //
 //
-func BuildOven(url string, debug bool) (*OvenMedia, error) {
+func BuildOven(url string, debug bool, header *HeaderConfigurator) (*OvenMedia, error) {
 	ovenClient := &OvenMedia{
 		Url:        url,
 		restClient: resty.New(),
@@ -19,7 +19,9 @@ func BuildOven(url string, debug bool) (*OvenMedia, error) {
 	// Host URL for all request. So you can use relative URL in the request
 	ovenClient.restClient.SetHostURL(url)
 	// Headers for all request
-	ovenClient.restClient.SetHeader("ome-access-token", "Basic ")
+	for h, v := range header.GetHeaders() {
+		ovenClient.restClient.SetHeader(h, v)
+	}
 	//
 	if debug {
 		ovenClient.restClient.SetDebug(true)
