@@ -17,10 +17,10 @@ type OvenMedia struct {
 type IOvenMediaClient interface {
 	HealthCheck() error
 	// VirtualHost
-	CreateVirtualHost(name string) error
+	CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 	GetAllVirtualHosts() (*ResponseVirtualList, error)
 	// Push
-	StartPush(vHost string, appName string)
+	StartPush(vHost string, appName string) (*resty.Response, error)
 }
 
 func (o *OvenMedia) HealthCheck() error {

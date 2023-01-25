@@ -6,7 +6,7 @@ import (
 
 // POST http://1.2.3.4:8081/v1/vhosts
 
-func (o *OvenMedia) CreateVirtualHost(name string) error {
+func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error) {
 	body := &RequestCreateVirtualHost{
 		VirtualHostsName: []VRHostResponse{
 			{
@@ -23,7 +23,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) error {
 	if virtualHost == nil {
 		return errors.New("could not create virtual host")
 	}
-	return nil
+	return virtualHost, nil
 }
 
 // GET http://1.2.3.4:8081/v1/vhosts
