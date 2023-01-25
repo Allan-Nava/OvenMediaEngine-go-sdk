@@ -20,7 +20,9 @@ type IOvenMediaClient interface {
 	CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 	GetAllVirtualHosts() (*ResponseVirtualList, error)
 	// Push
-	StartPush(vHost string, appName string) (*resty.Response, error)
+	StartPush(vHost string, appName string, body interface{}) (*resty.Response, error)
+	StopPush(vHost string, appName string, body interface{}) (*resty.Response, error)
+	// Recording
 }
 
 func (o *OvenMedia) HealthCheck() error {
