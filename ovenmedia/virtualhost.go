@@ -2,6 +2,8 @@ package ovenmedia
 
 import (
 	"errors"
+	
+	"gopkg.in/validator.v2"
 )
 
 // POST http://1.2.3.4:8081/v1/vhosts
@@ -13,6 +15,10 @@ func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 				Name: name,
 			},
 		},
+	}
+	if errs := validator.Validate(body); errs != nil {
+		// values not valid, deal with errors here
+		return nil, errs
 	}
 	resp, err := o.restyPost(V1_HOSTS, body)
 	if err != nil {
