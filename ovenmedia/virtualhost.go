@@ -2,7 +2,7 @@ package ovenmedia
 
 import (
 	"errors"
-	
+
 	"gopkg.in/validator.v2"
 )
 

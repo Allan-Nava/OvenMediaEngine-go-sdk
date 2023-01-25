@@ -21,8 +21,8 @@ type IOvenMediaClient interface {
 	CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 	GetAllVirtualHosts() (*ResponseVirtualList, error)
 	// Push
-	StartPush(vHost string, appName string, body interface{}) (*ResponseStartPush, error)
-	StopPush(vHost string, appName string, body interface{}) (*resty.Response, error)
+	StartPush(vHost string, appName string, body RequestBodyPush) (*ResponseStartPush, error)
+	StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error)
 	GetAllPushes(vHost string, appName string)()
 	// Recording
 }
@@ -52,8 +52,9 @@ func (o *OvenMedia) restyPost(url string, body interface{}) (*resty.Response, er
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		o.debugPrint(fmt.Sprintf("resp -> %v", resp))
-		return nil, errors.New(resp.Status())
+		err = fmt.Errorf("resp -> %v | status_code: %s", resp, resp.Status())
+		o.debugPrint(err)
+		return nil, err
 	}
 	return resp, nil
 }
@@ -67,8 +68,11 @@ func (o *OvenMedia) restyGet(url string, queryParams map[string]string) (*resty.
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		o.debugPrint(fmt.Sprintf("resp -> %v", resp))
-		return nil, errors.New(resp.Status())
+		resp.Body()
+		err = fmt.Errorf("resp -> %v | status_code: %s", resp, resp.Status())
+		o.debugPrint(err)
+		return nil, err
 	}
 	return resp, nil
 }
+

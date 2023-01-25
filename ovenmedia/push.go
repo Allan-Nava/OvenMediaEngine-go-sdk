@@ -8,8 +8,13 @@ import (
 )
 
 // POST http://1.2.3.4:8081/v1/vhosts/default/apps/app:startPush
-func (o *OvenMedia) StartPush(vHost string, appName string, body interface{}) (*ResponseStartPush, error) {
+// This is an action to request a push of a selected stream. Please refer to the "Push" document for detail setting.
+func (o *OvenMedia) StartPush(vHost string, appName string, body RequestBodyPush) (*ResponseStartPush, error) {
 	//
+	if errs := validator.Validate(body); errs != nil {
+		// values not valid, deal with errors here
+		return nil, errs
+	}
     //
 	resp, err := o.restyPost(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), body)
 	if err != nil {
@@ -22,9 +27,13 @@ func (o *OvenMedia) StartPush(vHost string, appName string, body interface{}) (*
 	return responseStartPush, nil
 }
 
-
-func (o *OvenMedia) StopPush(vHost string, appName string, body interface{}) (*resty.Response, error){
+// Request to stop pushing
+func (o *OvenMedia) StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error){
 	//
+	if errs := validator.Validate(body); errs != nil {
+		// values not valid, deal with errors here
+		return nil, errs
+	}
 	resp, err := o.restyPost(GET_VHOSTS_STOP_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
