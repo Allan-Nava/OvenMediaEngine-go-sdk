@@ -20,7 +20,7 @@ type IOvenMediaClient interface {
 	CreateVirtualHost(name string) error
 	GetAllVirtualHosts() (*ResponseVirtualList, error)
 	// Push
-	StartPush(appName string) 
+	StartPush(vHost string, appName string)
 }
 
 func (o *OvenMedia) HealthCheck() error {
@@ -39,6 +39,7 @@ func (o *OvenMedia) HealthCheck() error {
 	return nil
 }
 
+// Resty Methods
 
 func (o *OvenMedia) RestyPost(url string, body interface{}) (*resty.Response, error) {
 	resp, err := o.RestClient.R().

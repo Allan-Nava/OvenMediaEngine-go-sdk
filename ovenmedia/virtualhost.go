@@ -2,8 +2,6 @@ package ovenmedia
 
 import (
 	"errors"
-	"fmt"
-	"strings"
 )
 
 // POST http://1.2.3.4:8081/v1/vhosts
@@ -16,10 +14,10 @@ func (o *OvenMedia) CreateVirtualHost(name string) error {
 			},
 		},
 	}
-	resp, err := o.RestyPost("/v1/hosts", body)
-    if err != nil{
-        return err
-    }
+	resp, err := o.RestyPost(V1_HOSTS, body)
+	if err != nil {
+		return err
+	}
 	//
 	virtualHost := resp.Result().(*ResponseVirtualHost)
 	if virtualHost == nil {
@@ -31,10 +29,10 @@ func (o *OvenMedia) CreateVirtualHost(name string) error {
 // GET http://1.2.3.4:8081/v1/vhosts
 func (o *OvenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
 	//
-	resp, err := o.RestyGet("/v1/hosts")
-    if err != nil{
-        return err
-    }
+	resp, err := o.RestyGet(V1_HOSTS, nil)
+	if err != nil {
+		return nil, err
+	}
 	//
 	virtualList := resp.Result().(*ResponseVirtualList)
 	if virtualList == nil {
