@@ -13,7 +13,7 @@ func TestMain(m *testing.M) {
 //
 func GetOvenMedia() *ovenmedia.OvenMedia {
 	//
-	o, err := ovenmedia.BuildOven("https://airensoft.gitbook.io/ovenmediaengine/rest-api/v1/virtualhost/application/stream", true)
+	o, err := ovenmedia.BuildOven("https://airensoft.gitbook.io/ovenmediaengine/rest-api/v1/virtualhost/application/stream", true, nil)
 	if err != nil {
 		panic(err)
 	}
