@@ -18,9 +18,11 @@ func BuildOven(url string, debug bool, header *HeaderConfigurator) (*OvenMedia, 
 	//--------------------------------------------------------------------------------
 	// Host URL for all request. So you can use relative URL in the request
 	ovenClient.restClient.SetHostURL(url)
-	// Headers for all request
-	for h, v := range header.GetHeaders() {
-		ovenClient.restClient.SetHeader(h, v)
+	if header != nil {
+		// Headers for all request
+		for h, v := range header.GetHeaders() {
+			ovenClient.restClient.SetHeader(h, v)
+		}
 	}
 	//
 	if debug {
