@@ -16,12 +16,12 @@ func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 	}
 	resp, err := o.RestyPost(V1_HOSTS, body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	//
 	virtualHost := resp.Result().(*ResponseVirtualHost)
 	if virtualHost == nil {
-		return errors.New("could not create virtual host")
+		return nil, errors.New("could not create virtual host")
 	}
 	return virtualHost, nil
 }
