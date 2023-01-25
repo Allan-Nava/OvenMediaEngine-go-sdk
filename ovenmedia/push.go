@@ -14,12 +14,11 @@ func (o *OvenMedia) StartPush(vHost string, appName string, body interface{}) (*
 	if err != nil {
 		return nil, err
 	}
-
 	responseStartPush := resp.Result().(*ResponseStartPush)
-	if virtualHost == nil {
+	if responseStartPush == nil {
 		return nil, errors.New("could not start the push")
 	}
-	return virtualHost, nil
+	return responseStartPush, nil
 }
 
 
