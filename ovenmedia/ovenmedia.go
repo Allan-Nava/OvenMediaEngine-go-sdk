@@ -21,8 +21,9 @@ type IOvenMediaClient interface {
 	CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 	GetAllVirtualHosts() (*ResponseVirtualList, error)
 	// Push
-	StartPush(vHost string, appName string, body interface{}) (*resty.Response, error)
+	StartPush(vHost string, appName string, body interface{}) (*ResponseStartPush, error)
 	StopPush(vHost string, appName string, body interface{}) (*resty.Response, error)
+	GetAllPushes(vHost string, appName string)()
 	// Recording
 }
 
