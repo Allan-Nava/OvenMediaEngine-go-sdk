@@ -14,7 +14,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 			},
 		},
 	}
-	resp, err := o.debugPrint(V1_HOSTS, body)
+	resp, err := o.restyGet(V1_HOSTS, body)
 	if err != nil {
 		return nil, err
 	}
@@ -29,7 +29,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 // GET http://1.2.3.4:8081/v1/vhosts
 func (o *OvenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
 	//
-	resp, err := o.RestyGet(V1_HOSTS, nil)
+	resp, err := o.restyGet(V1_HOSTS, nil)
 	if err != nil {
 		return nil, err
 	}
