@@ -10,7 +10,7 @@ import (
 func (o *OvenMedia) StartPush(vHost string, appName string, body interface{}) (*resty.Response, error) {
 	//
     //
-	resp, err := o.RestyPost(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), body)
+	resp, err := o.debugPrint(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +21,7 @@ func (o *OvenMedia) StartPush(vHost string, appName string, body interface{}) (*
 
 func (o *OvenMedia) StopPush(vHost string, appName string, body interface{}) (*resty.Response, error){
 	//
-	resp, err := o.RestyPost(GET_VHOSTS_STOP_BY_NAME(vHost, appName), body)
+	resp, err := o.debugPrint(GET_VHOSTS_STOP_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
 	}
