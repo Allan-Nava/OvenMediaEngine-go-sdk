@@ -39,7 +39,34 @@ func (o *OvenMedia) HealthCheck() error {
 	return nil
 }
 
-// SetHeader(header string, value string) *resty.Request
-/*func (o *OvenMedia) SetHeaderAuthorization() *resty.Request {
-	return o.RestClient.R().SetHeader("ome-access-token", "Basic ")// need to be finish
-}*/
+
+func (o *OvenMedia) RestyPost(url string, body interface{}) (*resty.Response, error) {
+	resp, err := o.RestClient.R().
+		SetHeader("Accept", "application/json").
+		SetBody(body).
+		Post(url)
+
+	if err != nil {
+		return nil, err
+	}
+	if !strings.Contains(resp.Status(), "200") {
+		o.DebugPrint(fmt.Sprintf("resp -> %v", resp))
+		return nil, errors.New(resp.Status())
+	}
+	return resp, nil
+}
+
+func (o *OvenMedia) RestyGet(url string, queryParams map[string]string) (*resty.Response, error) {
+	resp, err := o.RestClient.R().
+		SetQueryParams(queryParams).
+		Get(url)
+	//
+	if err != nil {
+		return nil, err
+	}
+	if !strings.Contains(resp.Status(), "200") {
+		o.DebugPrint(fmt.Sprintf("resp -> %v", resp))
+		return nil, errors.New(resp.Status())
+	}
+	return resp, nil
+}
