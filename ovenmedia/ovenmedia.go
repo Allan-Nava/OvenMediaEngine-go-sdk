@@ -35,7 +35,7 @@ func (o *OvenMedia) HealthCheck() error {
 	}
 	//
 	if !strings.Contains(resp.Status(), "200") {
-		o.DebugPrint(fmt.Sprintf("resp -> %v", resp))
+		o.debugPrint(fmt.Sprintf("resp -> %v", resp))
 		return errors.New("could not connect OvenMediaEngine")
 	}
 	return nil
@@ -53,7 +53,7 @@ func (o *OvenMedia) restyPost(url string, body interface{}) (*resty.Response, er
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		o.DebugPrint(fmt.Sprintf("resp -> %v", resp))
+		o.debugPrint(fmt.Sprintf("resp -> %v", resp))
 		return nil, errors.New(resp.Status())
 	}
 	return resp, nil
@@ -68,7 +68,7 @@ func (o *OvenMedia) restyGet(url string, queryParams map[string]string) (*resty.
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		o.DebugPrint(fmt.Sprintf("resp -> %v", resp))
+		o.debugPrint(fmt.Sprintf("resp -> %v", resp))
 		return nil, errors.New(resp.Status())
 	}
 	return resp, nil
