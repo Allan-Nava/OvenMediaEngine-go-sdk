@@ -12,5 +12,6 @@ func Test_GetAllVirtualHost(t *testing.T) {
 		panic(err)
 	}
 	fmt.Println(vr)*/
+	fmt.Println(vr)
 }
 
