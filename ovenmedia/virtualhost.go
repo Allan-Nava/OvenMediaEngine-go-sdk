@@ -14,7 +14,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 			},
 		},
 	}
-	resp, err := o.restyGet(V1_HOSTS, body)
+	resp, err := o.restyPost(V1_HOSTS, body)
 	if err != nil {
 		return nil, err
 	}
