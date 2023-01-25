@@ -16,8 +16,11 @@ type OvenMedia struct {
 
 type IOvenMediaClient interface {
 	HealthCheck() error
+	// VirtualHost
 	CreateVirtualHost(name string) error
 	GetAllVirtualHosts() (*ResponseVirtualList, error)
+	// Push
+	StartPush(appName string) 
 }
 
 func (o *OvenMedia) HealthCheck() error {
