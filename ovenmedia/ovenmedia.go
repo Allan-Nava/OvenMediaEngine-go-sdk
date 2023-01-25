@@ -1,7 +1,6 @@
 package ovenmedia
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 

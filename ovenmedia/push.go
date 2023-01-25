@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/go-resty/resty/v2"
+	"gopkg.in/validator.v2"
 )
 
 // POST http://1.2.3.4:8081/v1/vhosts/default/apps/app:startPush
