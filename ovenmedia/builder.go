@@ -12,18 +12,18 @@ import (
 func BuildOven(url string, debug bool) (*OvenMedia, error) {
 	ovenClient := &OvenMedia{
 		Url:        url,
-		RestClient: resty.New(),
+		restClient: resty.New(),
 	}
 	// You can override all below settings and options at request level if you want to
 	//--------------------------------------------------------------------------------
 	// Host URL for all request. So you can use relative URL in the request
-	ovenClient.RestClient.SetHostURL(url)
+	ovenClient.restClient.SetHostURL(url)
 	// Headers for all request
-	ovenClient.RestClient.SetHeader("ome-access-token", "Basic ")
+	ovenClient.restClient.SetHeader("ome-access-token", "Basic ")
 	//
 	if debug {
-		ovenClient.RestClient.SetDebug(true)
-		ovenClient.Debug = true
+		ovenClient.restClient.SetDebug(true)
+		ovenClient.debug = true
 		log.Println("Debug mode is enabled for the Haproxy client ")
 	}
 	return ovenClient, nil
@@ -31,8 +31,8 @@ func BuildOven(url string, debug bool) (*OvenMedia, error) {
 
 //
 
-func (o *OvenMedia) DebugPrint(data interface{}) {
-	if o.Debug {
+func (o *OvenMedia) debugPrint(data interface{}) {
+	if o.debug {
 		log.Println(data)
 	}
 }

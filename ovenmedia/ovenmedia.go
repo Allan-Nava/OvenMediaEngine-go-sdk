@@ -10,8 +10,8 @@ import (
 
 type OvenMedia struct {
 	Url        string
-	RestClient *resty.Client
-	Debug      bool
+	debug      bool
+	restClient *resty.Client
 }
 
 type IOvenMediaClient interface {
@@ -26,7 +26,7 @@ type IOvenMediaClient interface {
 }
 
 func (o *OvenMedia) HealthCheck() error {
-	resp, err := o.RestClient.R().
+	resp, err := o.restClient.R().
 		SetHeader("Accept", "application/json").
 		Get(o.Url)
 	//
@@ -43,8 +43,8 @@ func (o *OvenMedia) HealthCheck() error {
 
 // Resty Methods
 
-func (o *OvenMedia) RestyPost(url string, body interface{}) (*resty.Response, error) {
-	resp, err := o.RestClient.R().
+func (o *OvenMedia) restyPost(url string, body interface{}) (*resty.Response, error) {
+	resp, err := o.restClient.R().
 		SetHeader("Accept", "application/json").
 		SetBody(body).
 		Post(url)
@@ -59,8 +59,8 @@ func (o *OvenMedia) RestyPost(url string, body interface{}) (*resty.Response, er
 	return resp, nil
 }
 
-func (o *OvenMedia) RestyGet(url string, queryParams map[string]string) (*resty.Response, error) {
-	resp, err := o.RestClient.R().
+func (o *OvenMedia) restyGet(url string, queryParams map[string]string) (*resty.Response, error) {
+	resp, err := o.restClient.R().
 		SetQueryParams(queryParams).
 		Get(url)
 	//
