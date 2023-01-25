@@ -26,7 +26,7 @@ func BuildOven(url string, debug bool, header *HeaderConfigurator) (*OvenMedia, 
 	if debug {
 		ovenClient.restClient.SetDebug(true)
 		ovenClient.debug = true
-		log.Println("Debug mode is enabled for the Haproxy client ")
+		log.Println("Debug mode is enabled for the OvenMedia client ")
 	}
 	return ovenClient, nil
 }
