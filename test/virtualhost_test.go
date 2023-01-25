@@ -7,7 +7,7 @@ import (
 
 func Test_GetAllVirtualHost(t *testing.T) {
 	o := GetOvenMedia()
-	vr, err := o.GetAllVirtualHosts()
+	vr, _ := o.GetAllVirtualHosts()
 	/*if err != nil {
 		panic(err)
 	}
