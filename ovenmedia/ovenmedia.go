@@ -67,7 +67,6 @@ func (o *OvenMedia) restyGet(url string, queryParams map[string]string) (*resty.
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		resp.Body()
 		err = fmt.Errorf("%v",resp)
 		o.debugPrint(err)
 		return nil, err
