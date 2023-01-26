@@ -42,3 +42,18 @@ func (o *OvenMedia) StopPush(vHost string, appName string, body RequestBodyPush)
 	fmt.Println("resp", resp)
 	return resp, nil
 }
+
+
+// Get all push lists for a specific application
+func (o *OvenMedia) GetAllPushes(vHost string, appName string) (*ResponsePushes, error) {
+	//
+	resp, err := o.restyPost(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), nil)
+	if err != nil {
+		return nil, err
+	}
+	pushes := resp.Result().(*ResponsePushes)
+	if pushes == nil {
+		return nil, errors.New("could not start the push")
+	}
+	return pushes, nil
+}

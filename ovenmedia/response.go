@@ -48,3 +48,9 @@ type ResponsePush struct {
 	URL            string `json:"url"`
 	Vhost          string `json:"vhost"`
 }
+//
+type ResponsePushes struct {
+	Message    string         `json:"message"`
+	Response   []ResponsePush `json:"response"`
+	StatusCode int            `json:"statusCode"`
+}

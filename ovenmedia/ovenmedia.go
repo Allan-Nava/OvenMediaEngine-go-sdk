@@ -22,7 +22,7 @@ type IOvenMediaClient interface {
 	// Push
 	StartPush(vHost string, appName string, body RequestBodyPush) (*ResponseStartPush, error)
 	StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error)
-	GetAllPushes(vHost string, appName string)()
+	GetAllPushes(vHost string, appName string) (*ResponsePushes, error)
 	// Recording
 }
 
