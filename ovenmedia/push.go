@@ -21,11 +21,11 @@ func (o *OvenMedia) StartPush(vHost string, appName string, body RequestBodyPush
 	if err != nil {
 		return nil, err
 	}
-	responseStartPush := resp.Result().(*ResponseStartPush)
-	if responseStartPush == nil {
-		return nil, errors.New("could not start the push")
+	var obj ResponseStartPush
+	if err := json.Unmarshal(res.Body(), &obj); err != nil {
+		return nil, err
 	}
-	return responseStartPush, nil
+	return obj, nil
 }
 
 // Request to stop pushing
@@ -39,6 +39,7 @@ func (o *OvenMedia) StopPush(vHost string, appName string, body RequestBodyPush)
 	if err != nil {
 		return nil, err
 	}
+	// TODO: 
 	fmt.Println("resp", resp)
 	return resp, nil
 }
@@ -51,9 +52,9 @@ func (o *OvenMedia) GetAllPushes(vHost string, appName string) (*ResponsePushes,
 	if err != nil {
 		return nil, err
 	}
-	pushes := resp.Result().(*ResponsePushes)
-	if pushes == nil {
-		return nil, errors.New("could not start the push")
+	var obj ResponsePushes
+	if err := json.Unmarshal(res.Body(), &obj); err != nil {
+		return nil, err
 	}
 	return pushes, nil
 }
