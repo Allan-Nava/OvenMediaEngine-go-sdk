@@ -39,3 +39,13 @@ import "github.com/Allan-Nava/OvenMediaEngine-go-sdk"
 - Control stream playback
 - Record and access stream data
 
+### API documentation
+The SDK's documentation can be found at https://github.com/Allan-Nava/OvenMediaEngine-go-sdk
+
+### Contributing
+We welcome contributions to this library. If you find any bugs or have suggestions for new features, please open an issue or submit a pull request.
+
+### License
+This library is licensed under the MIT License.
+
+Please note that this is a sample and for more details about the functionalities, features and example you need to look at the package documentation and the code.
