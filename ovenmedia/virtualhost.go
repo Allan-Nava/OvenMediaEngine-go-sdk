@@ -2,8 +2,7 @@ package ovenmedia
 
 import (
 	"json"
-	"errors"
-
+	"json"
 	"gopkg.in/validator.v2"
 )
 
@@ -27,10 +26,10 @@ func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 	}
 	//
 	var obj ResponseVirtualHost
-	if err := json.Unmarshal(res.Body(), &obj); err != nil {
+	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
 		return nil, err
 	}
-	return obj, nil
+	return &obj, nil
 }
 
 // GET http://1.2.3.4:8081/v1/vhosts
@@ -41,9 +40,9 @@ func (o *OvenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
 		return nil, err
 	}
 	var obj ResponseVirtualList
-	if err := json.Unmarshal(res.Body(), &obj); err != nil {
+	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
 		return nil, err
 	}
 	//
-	return obj, nil
+	return &obj, nil
 }

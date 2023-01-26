@@ -2,8 +2,7 @@ package ovenmedia
 
 import (
 	"fmt"
-	"errors"
-
+	"json"
 	"github.com/go-resty/resty/v2"
 	"gopkg.in/validator.v2"
 )
@@ -22,10 +21,10 @@ func (o *OvenMedia) StartPush(vHost string, appName string, body RequestBodyPush
 		return nil, err
 	}
 	var obj ResponseStartPush
-	if err := json.Unmarshal(res.Body(), &obj); err != nil {
+	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
 		return nil, err
 	}
-	return obj, nil
+	return &obj, nil
 }
 
 // Request to stop pushing
@@ -53,8 +52,8 @@ func (o *OvenMedia) GetAllPushes(vHost string, appName string) (*ResponsePushes,
 		return nil, err
 	}
 	var obj ResponsePushes
-	if err := json.Unmarshal(res.Body(), &obj); err != nil {
+	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
 		return nil, err
 	}
-	return pushes, nil
+	return &obj, nil
 }
