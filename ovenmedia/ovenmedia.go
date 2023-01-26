@@ -51,7 +51,7 @@ func (o *OvenMedia) restyPost(url string, body interface{}) (*resty.Response, er
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		err = fmt.Errorf("resp -> %v | status_code: %s", resp, resp.Status())
+		err = fmt.Errorf(resp)
 		o.debugPrint(err)
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func (o *OvenMedia) restyGet(url string, queryParams map[string]string) (*resty.
 	}
 	if !strings.Contains(resp.Status(), "200") {
 		resp.Body()
-		err = fmt.Errorf("resp -> %v | status_code: %s", resp, resp.Status())
+		err = fmt.Errorf(resp)
 		o.debugPrint(err)
 		return nil, err
 	}
