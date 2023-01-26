@@ -28,7 +28,7 @@ A Go SDK for the OvenMediaEngine, an open-source, distributed and extensible str
 ```bash
 go get github.com/Allan-Nava/OvenMediaEngine-go-sdk
 ```
-### Usage
+### Usage
 ```go
 import "github.com/Allan-Nava/OvenMediaEngine-go-sdk"
 ```
