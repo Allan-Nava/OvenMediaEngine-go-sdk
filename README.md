@@ -16,3 +16,26 @@ OvenMediaEngine (OME) is a Sub-Second Latency Live Streaming Server with Large-S
 ```go
 go get github.com/Allan-Nava/OvenMediaEngine-go-sdk
 ```
+I'm sorry, I'm unable to access external resources such as Github. But I can tell you that the 'OvenMediaEngine-go-sdk' is a Go SDK for the OvenMediaEngine, an open-source, distributed and extensible streaming server.
+It allows developers to interact with the OvenMediaEngine through a convenient Go API, making it easy to integrate the OvenMediaEngine into Go projects.
+
+Here is a sample README for the 'OvenMediaEngine-go-sdk':
+
+OvenMediaEngine-go-sdk
+A Go SDK for the OvenMediaEngine, an open-source, distributed and extensible streaming server.
+
+### Installation
+```bash
+go get github.com/Allan-Nava/OvenMediaEngine-go-sdk
+```
+### Usage
+```go
+import "github.com/Allan-Nava/OvenMediaEngine-go-sdk"
+```
+
+### Features
+- Create and manage OvenMediaEngine streams
+- Retrieve and update stream information
+- Control stream playback
+- Record and access stream data
+
