@@ -2,7 +2,7 @@ package ovenmedia
 
 import (
 	"fmt"
-	"json"
+	"encoding/json"
 	"github.com/go-resty/resty/v2"
 	"gopkg.in/validator.v2"
 )

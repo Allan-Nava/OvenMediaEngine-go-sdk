@@ -1,8 +1,7 @@
 package ovenmedia
 
 import (
-	"json"
-	"json"
+	"encoding/json"
 	"gopkg.in/validator.v2"
 )
 
