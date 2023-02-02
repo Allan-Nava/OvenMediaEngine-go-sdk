@@ -21,6 +21,15 @@ const (
 	V1_HOSTS_STOP_RECORD_NAME = "/v1/vhosts/%s/apps/%s:stopRecord"
 	// http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:records
 	V1_HOSTS_RECORDS_NAME = "/v1/vhosts/%s/apps/%s:records"
+	// 
+	// STATS 
+	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}
+	V1_CURRENT_STATS_NAME = "/v1/stats/current/vhosts/%s"
+	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}/apps/{app_name}
+	V1_CURRENT_STATS_APPP_NAME = "/v1/stats/current/vhosts/%s/apps/%s"
+	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}/apps/{app_name}/stream/{stream}
+	V1_CURRENT_STATS_APPP_STREAMS_NAME = "/v1/stats/current/vhosts/%s/apps/%s/stream/%s"
+	//
 )
 
 var (
@@ -52,6 +61,18 @@ var (
 	//
 	GET_VHOSTS_RECORDS_BY_NAME = func(vhostName string, appName string) string {
 		return fmt.Sprintf(V1_HOSTS_RECORDS_NAME, vhostName, appName)
+	}
+	//
+	GET_CURRENT_STATS_NAME = func(vhostName string) string {
+		return fmt.Sprintf(V1_CURRENT_STATS_NAME, vhostName)
+	}
+	//
+	GET_CURRENT_STATS_APP_NAME = func(vhostName string, appName string) string {
+		return fmt.Sprintf(V1_CURRENT_STATS_APPP_NAME, vhostName, appName)
+	}
+	//
+	GET_CURRENT_STATS_STREAM = func(vhostName string, appName string, stream string) string {
+		return fmt.Sprintf(V1_CURRENT_STATS_APPP_STREAMS_NAME, vhostName, appName, stream)
 	}
 	//
 )
