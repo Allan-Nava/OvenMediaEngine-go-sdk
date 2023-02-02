@@ -3,7 +3,7 @@ package ovenmedia
 import (
 	"fmt"
 	"strings"
-	
+
 	"github.com/go-resty/resty/v2"
 )
 
@@ -24,7 +24,7 @@ type IOvenMediaClient interface {
 	StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error)
 	GetAllPushes(vHost string, appName string) (*ResponsePushes, error)
 	// Recording
-
+	StartRecording(vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error)
 	// Stats
 	GetStatsVhosts(vHost string) (*ResponseStats, error)
 	GetStatsAppVhosts(vHost string, appName string) (*ResponseStats, error)
@@ -40,7 +40,6 @@ func (o *OvenMedia) HealthCheck() error {
 	return nil
 }
 
-// 
 func (o *OvenMedia) IsDebug() bool {
 	return o.debug
 }
@@ -57,7 +56,7 @@ func (o *OvenMedia) restyPost(url string, body interface{}) (*resty.Response, er
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		err = fmt.Errorf("%v",resp)
+		err = fmt.Errorf("%v", resp)
 		o.debugPrint(err)
 		return nil, err
 	}
@@ -73,10 +72,9 @@ func (o *OvenMedia) restyGet(url string, queryParams map[string]string) (*resty.
 		return nil, err
 	}
 	if !strings.Contains(resp.Status(), "200") {
-		err = fmt.Errorf("%v",resp)
+		err = fmt.Errorf("%v", resp)
 		o.debugPrint(err)
 		return nil, err
 	}
 	return resp, nil
 }
-

@@ -1,14 +1,18 @@
 package ovenmedia
 
+type BaseResponseOK struct {
+	Message    string `json:"message"`
+	StatusCode int    `json:"statusCode"`
+}
+
 // Response<VirtualHost>
 type ResponseVirtualHost struct {
 	VRHosts []VirtualHost
 }
 
 type VirtualHost struct {
-	Message    string         `json:"message"`
-	Response   VRHostResponse `json:"response"`
-	StatusCode int            `json:"statusCode"`
+	BaseResponseOK
+	Response VRHostResponse `json:"response"`
 }
 
 type VRHostResponse struct {
@@ -16,16 +20,14 @@ type VRHostResponse struct {
 }
 
 type ResponseVirtualList struct {
-	Message    string   `json:"message"`
-	Response   []string `json:"response"`
-	StatusCode int      `json:"statusCode"`
+	BaseResponseOK
+	Response []string `json:"response"`
 }
-//
+
 // PUSH Stuff
 type ResponseStartPush struct {
-	Message    string       `json:"message"`
-	Response   ResponsePush `json:"response"`
-	StatusCode int          `json:"statusCode"`
+	BaseResponseOK
+	Response ResponsePush `json:"response"`
 }
 
 type ResponsePush struct {
@@ -48,11 +50,10 @@ type ResponsePush struct {
 	URL            string `json:"url"`
 	Vhost          string `json:"vhost"`
 }
-//
+
 type ResponsePushes struct {
-	Message    string         `json:"message"`
-	Response   []ResponsePush `json:"response"`
-	StatusCode int            `json:"statusCode"`
+	BaseResponseOK
+	Response []ResponsePush `json:"response"`
 }
 
 /*
@@ -78,4 +79,52 @@ type ResponseStats struct {
 	TotalBytesIn           int    `json:"totalBytesIn"`
 	TotalBytesOut          int    `json:"totalBytesOut"`
 	TotalConnections       int    `json:"totalConnections"`
+}
+
+// Recording Stuff
+
+/*
+	{
+	    "message": "OK",
+	    "response": [
+	        {
+	            "state": "ready",
+	            "id": "stream_o",
+	            "vhost": "default",
+	            "app": "app",
+	            "stream": {
+	                "name": "stream_o",
+	                "tracks": []
+	            },
+	            "filePath": "/path/to/save/recorded/file_${Sequence}.ts",
+	            "infoPath": "/path/to/save/information/file.xml",
+	            "interval": 60000,
+	            "schedule": "0 0 *1",
+	            "segmentationRule": "continuity",
+	            "createdTime": "2021-08-31T23:44:44.789+0900"
+	        }
+	    ],
+	    "statusCode": 200
+	}
+*/
+type ResponseRecordingStart struct {
+	BaseResponseOK
+	Response ResponseRecording `json:"response"`
+}
+
+type ResponseRecording struct {
+	State  string `json:"state"`
+	ID     string `json:"id"`
+	Vhost  string `json:"vhost"`
+	App    string `json:"app"`
+	Stream struct {
+		Name   string `json:"name"`
+		Tracks []int  `json:"tracks"`
+	} `json:"stream"`
+	FilePath         string `json:"filePath"`
+	InfoPath         string `json:"infoPath"`
+	Interval         int    `json:"interval"`
+	Schedule         string `json:"schedule"`
+	SegmentationRule string `json:"segmentationRule"`
+	CreatedTime      string `json:"createdTime"`
 }
