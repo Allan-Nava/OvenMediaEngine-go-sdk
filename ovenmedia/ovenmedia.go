@@ -24,6 +24,10 @@ type IOvenMediaClient interface {
 	StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error)
 	GetAllPushes(vHost string, appName string) (*ResponsePushes, error)
 	// Recording
+	
+	// Stats
+	GetStatsVhosts(vHost string) (*ResponseStats, error)
+	//
 }
 
 func (o *OvenMedia) HealthCheck() error {

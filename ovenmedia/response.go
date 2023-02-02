@@ -54,3 +54,28 @@ type ResponsePushes struct {
 	Response   []ResponsePush `json:"response"`
 	StatusCode int            `json:"statusCode"`
 }
+
+/*
+	{
+		"createdTime": "2021-01-11T02:52:22.013+09:00",
+		"lastRecvTime": "2021-01-11T04:11:41.734+09:00",
+		"lastSentTime": "2021-01-11T02:52:22.013+09:00",
+		"lastUpdatedTime": "2021-01-11T04:11:41.734+09:00",
+		"maxTotalConnectionTime": "2021-01-11T02:52:22.013+09:00",
+		"maxTotalConnections": 0,
+		"totalBytesIn": 494713880,
+		"totalBytesOut": 0,
+		"totalConnections": 0
+	}
+*/
+type ResponseStats struct {
+	CreatedTime            string `json:"createdTime"`
+	LastRecvTime           string `json:"lastRecvTime"`
+	LastSentTime           string `json:"lastSentTime"`
+	LastUpdatedTime        string `json:"lastUpdatedTime"`
+	MaxTotalConnectionTime string `json:"maxTotalConnectionTime"`
+	MaxTotalConnections    int    `json:"maxTotalConnections"`
+	TotalBytesIn           int    `json:"totalBytesIn"`
+	TotalBytesOut          int    `json:"totalBytesOut"`
+	TotalConnections       int    `json:"totalConnections"`
+}
