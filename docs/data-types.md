@@ -19,6 +19,17 @@ last_modified_date: 2023-02-06T10:00:00+0000
 | Long | 64bits integer | 391859818923919232311 |
 | Float | 64bits real number | 3.5483 |
 | String | A string | "Hello" |
+| Bool | true/false | true |
+| Timestamp (String)| A timestamp in ISO8601 format | "2021-01-01T11:00:00.000+09:00" |
+| TimeInterval(Long) | A time interval (unit: milliseconds) | 349820 |
+| IP address | "127.0.0.1" | "127.0.0.1" |
+| RangedPort (String) | Port numbers with range (it can contain multiple ports and protocols)
+start_port[-end_port][,start_port[-end_port][,start_port[-end_port]...]][/protocol] | "40000-40005/tcp"
+"40000-40005"
+"40000-40005,10000,20000/tcp" |
+| Port (String) | A port number
+start_port[/protocol]| "1935/tcp"
+"1935"|
 
 
 
