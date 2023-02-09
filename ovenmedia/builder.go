@@ -9,8 +9,8 @@ import (
 //type Builder OvenMedia
 //
 //
-func BuildOven(url string, debug bool, header *HeaderConfigurator) (*OvenMedia, error) {
-	ovenClient := &OvenMedia{
+func BuildOven(url string, debug bool, header *HeaderConfigurator) (IOvenMediaClient, error) {
+	ovenClient := &ovenMedia{
 		Url:        url,
 		restClient: resty.New(),
 	}
@@ -28,14 +28,14 @@ func BuildOven(url string, debug bool, header *HeaderConfigurator) (*OvenMedia, 
 	if debug {
 		ovenClient.restClient.SetDebug(true)
 		ovenClient.debug = true
-		log.Println("Debug mode is enabled for the OvenMedia client ")
+		log.Println("Debug mode is enabled for the IOvenMediaClient client ")
 	}
 	return ovenClient, nil
 }
 
 //
 
-func (o *OvenMedia) debugPrint(data interface{}) {
+func (o *ovenMedia) debugPrint(data interface{}) {
 	if o.debug {
 		log.Println(data)
 	}

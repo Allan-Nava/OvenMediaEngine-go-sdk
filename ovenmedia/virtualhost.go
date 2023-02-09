@@ -7,7 +7,7 @@ import (
 
 // POST http://1.2.3.4:8081/v1/vhosts
 
-func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error) {
+func (o *ovenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error) {
 	body := &RequestCreateVirtualHost{
 		VirtualHostsName: []VRHostResponse{
 			{
@@ -32,7 +32,7 @@ func (o *OvenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 }
 
 // GET http://1.2.3.4:8081/v1/vhosts
-func (o *OvenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
+func (o *ovenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
 	//
 	resp, err := o.restyGet(V1_HOSTS, nil)
 	if err != nil {

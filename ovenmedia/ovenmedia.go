@@ -7,7 +7,7 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-type OvenMedia struct {
+type ovenMedia struct {
 	Url        string
 	debug      bool
 	restClient *resty.Client
@@ -32,7 +32,7 @@ type IOvenMediaClient interface {
 	//
 }
 
-func (o *OvenMedia) HealthCheck() error {
+func (o *ovenMedia) HealthCheck() error {
 	_, err := o.restyGet(o.Url, nil)
 	if err != nil {
 		return err
@@ -40,13 +40,13 @@ func (o *OvenMedia) HealthCheck() error {
 	return nil
 }
 
-func (o *OvenMedia) IsDebug() bool {
+func (o *ovenMedia) IsDebug() bool {
 	return o.debug
 }
 
 // Resty Methods
 
-func (o *OvenMedia) restyPost(url string, body interface{}) (*resty.Response, error) {
+func (o *ovenMedia) restyPost(url string, body interface{}) (*resty.Response, error) {
 	resp, err := o.restClient.R().
 		SetHeader("Accept", "application/json").
 		SetBody(body).
@@ -63,7 +63,7 @@ func (o *OvenMedia) restyPost(url string, body interface{}) (*resty.Response, er
 	return resp, nil
 }
 
-func (o *OvenMedia) restyGet(url string, queryParams map[string]string) (*resty.Response, error) {
+func (o *ovenMedia) restyGet(url string, queryParams map[string]string) (*resty.Response, error) {
 	resp, err := o.restClient.R().
 		SetQueryParams(queryParams).
 		Get(url)
