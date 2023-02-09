@@ -11,7 +11,7 @@ func TestMain(m *testing.M) {
 }
 
 //
-func GetOvenMedia() *ovenmedia.OvenMedia {
+func GetOvenMedia() ovenmedia.IOvenMediaClient {
 	//
 	o, err := ovenmedia.BuildOven("https://airensoft.gitbook.io/ovenmediaengine/rest-api/v1/virtualhost/application/stream", true, nil)
 	if err != nil {
