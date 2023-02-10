@@ -19,8 +19,6 @@ go get github.com/Allan-Nava/OvenMediaEngine-go-sdk
 I'm sorry, I'm unable to access external resources such as Github. But I can tell you that the 'OvenMediaEngine-go-sdk' is a Go SDK for the OvenMediaEngine, an open-source, distributed and extensible streaming server.
 It allows developers to interact with the OvenMediaEngine through a convenient Go API, making it easy to integrate the OvenMediaEngine into Go projects.
 
-Here is a sample README for the 'OvenMediaEngine-go-sdk':
-
 OvenMediaEngine-go-sdk
 A Go SDK for the OvenMediaEngine, an open-source, distributed and extensible streaming server.
 
