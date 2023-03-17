@@ -29,6 +29,8 @@ type IOvenMediaClient interface {
 	GetStatsVhosts(vHost string) (*ResponseStats, error)
 	GetStatsAppVhosts(vHost string, appName string) (*ResponseStats, error)
 	GetStatsStreamVhosts(vHost string, appName string, stream string) (*ResponseStats, error)
+	// Thumbnail
+	GetThumbnail(appName string) (*resty.Response, error)
 	//
 }
 

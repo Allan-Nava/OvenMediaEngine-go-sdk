@@ -21,8 +21,8 @@ const (
 	V1_HOSTS_STOP_RECORD_NAME = "/v1/vhosts/%s/apps/%s:stopRecord"
 	// http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:records
 	V1_HOSTS_RECORDS_NAME = "/v1/vhosts/%s/apps/%s:records"
-	// 
-	// STATS 
+	//
+	// STATS
 	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}
 	V1_CURRENT_STATS_NAME = "/v1/stats/current/vhosts/%s"
 	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}/apps/{app_name}
@@ -73,6 +73,10 @@ var (
 	//
 	GET_CURRENT_STATS_STREAM = func(vhostName string, appName string, stream string) string {
 		return fmt.Sprintf(V1_CURRENT_STATS_APPP_STREAMS_NAME, vhostName, appName, stream)
+	}
+	//
+	GET_THUMBNAILS = func(appName string) string {
+		return fmt.Sprintf("/%s/thumbnail.jpg", appName)
 	}
 	//
 )
