@@ -21,7 +21,7 @@ func (o *ovenMedia) StartRecording(vHost string, appName string, body RequestRec
 
 //
 
-func (o *ovenMedia) StopRecording(vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error) {
+func (o *ovenMedia) StopRecording(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error) {
 	//
 	resp, err := o.restyPost(GET_VHOSTS_STOP_RECORDED_BY_NAME(vHost, appName), body)
 	if err != nil {
