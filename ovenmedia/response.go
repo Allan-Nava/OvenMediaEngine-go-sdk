@@ -109,7 +109,7 @@ type ResponseStats struct {
 */
 type ResponseRecordingStart struct {
 	BaseResponseOK
-	Response ResponseRecording `json:"response"`
+	Response []ResponseRecording `json:"response"`
 }
 
 type ResponseRecording struct {
@@ -128,3 +128,5 @@ type ResponseRecording struct {
 	SegmentationRule string `json:"segmentationRule"`
 	CreatedTime      string `json:"createdTime"`
 }
+
+//
