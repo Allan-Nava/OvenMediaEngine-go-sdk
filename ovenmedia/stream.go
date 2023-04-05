@@ -8,7 +8,7 @@ import (
 // POST http://1.2.3.4:8081/v1/vhosts
 
 func (o *ovenMedia) GetStreams(host string, application string) (*ResponseVirtualList, error) {
-	url := fmt.Sprintf("%s/vhosts/%s/apps/%s/streams", V1_HOSTS, host, application)
+	url := fmt.Sprintf("%s/%s/apps/%s/streams", V1_HOSTS, host, application)
 	resp, err := o.restyGet(url, nil)
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (o *ovenMedia) GetStreams(host string, application string) (*ResponseVirtua
 }
 
 func (o *ovenMedia) GetStreamInfo(host string, application string, stream string) (*ResponseStreamInfo, error) {
-	url := fmt.Sprintf("%s/vhosts/%s/apps/%s/streams/%s", V1_HOSTS, host, application, stream)
+	url := fmt.Sprintf("%s/%s/apps/%s/streams/%s", V1_HOSTS, host, application, stream)
 	resp, err := o.restyGet(url, nil)
 	if err != nil {
 		return nil, err

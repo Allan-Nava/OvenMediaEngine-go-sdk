@@ -8,7 +8,7 @@ import (
 // POST http://1.2.3.4:8081/v1/vhosts
 
 func (o *ovenMedia) GetApplications(host string) (*ResponseVirtualList, error) {
-	url := fmt.Sprintf("%s/vhosts/%s/apps", V1_HOSTS, host)
+	url := fmt.Sprintf("%s/%s/apps", V1_HOSTS, host)
 	resp, err := o.restyGet(url, nil)
 	if err != nil {
 		return nil, err
