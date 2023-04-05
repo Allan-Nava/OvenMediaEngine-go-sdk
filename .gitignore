@@ -13,3 +13,7 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+/.idea/.gitignore
+/.idea/modules.xml
+/.idea/OvenMediaEngine-go-sdk.iml
+/.idea/vcs.xml

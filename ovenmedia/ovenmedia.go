@@ -19,6 +19,11 @@ type IOvenMediaClient interface {
 	// VirtualHost
 	CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 	GetAllVirtualHosts() (*ResponseVirtualList, error)
+	// Application
+	GetApplications(host string) (*ResponseVirtualList, error)
+	//Stream
+	GetStreams(host string, application string) (*ResponseVirtualList, error)
+	GetStreamInfo(host string, application string, stream string) (*ResponseStreamInfo, error)
 	// Push
 	StartPush(vHost string, appName string, body RequestBodyPush) (*ResponseStartPush, error)
 	StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error)
