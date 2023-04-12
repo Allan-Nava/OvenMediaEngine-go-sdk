@@ -1,8 +1,8 @@
 package ovenmedia
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/go-resty/resty/v2"
 	"gopkg.in/validator.v2"
 )
@@ -15,7 +15,7 @@ func (o *ovenMedia) StartPush(vHost string, appName string, body RequestBodyPush
 		// values not valid, deal with errors here
 		return nil, errs
 	}
-    //
+	//
 	resp, err := o.restyPost(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
@@ -28,7 +28,7 @@ func (o *ovenMedia) StartPush(vHost string, appName string, body RequestBodyPush
 }
 
 // Request to stop pushing
-func (o *ovenMedia) StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error){
+func (o *ovenMedia) StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error) {
 	//
 	if errs := validator.Validate(body); errs != nil {
 		// values not valid, deal with errors here
@@ -38,16 +38,15 @@ func (o *ovenMedia) StopPush(vHost string, appName string, body RequestBodyPush)
 	if err != nil {
 		return nil, err
 	}
-	// TODO: 
+	// TODO:
 	fmt.Println("resp", resp)
 	return resp, nil
 }
 
-
 // Get all push lists for a specific application
 func (o *ovenMedia) GetAllPushes(vHost string, appName string) (*ResponsePushes, error) {
 	//
-	resp, err := o.restyPost(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), nil)
+	resp, err := o.restyPost(GET_VHOSTS_PUSHES_BY_NAME(vHost, appName), nil)
 	if err != nil {
 		return nil, err
 	}
