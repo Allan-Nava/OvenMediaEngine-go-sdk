@@ -26,6 +26,31 @@ type ResponseVirtualList struct {
 	Response []string `json:"response"`
 }
 
+type ResponsePushes struct {
+	BaseResponseOK
+	Response []struct {
+		App         string    `json:"app"`
+		CreatedTime time.Time `json:"createdTime"`
+		FinishTime  time.Time `json:"finishTime"`
+		Id          string    `json:"id"`
+		Protocol    string    `json:"protocol"`
+		SentBytes   int       `json:"sentBytes"`
+		SentTime    int       `json:"sentTime"`
+		Sequence    int       `json:"sequence"`
+		StartTime   time.Time `json:"startTime"`
+		State       string    `json:"state"`
+		Stream      struct {
+			Name   string `json:"name"`
+			Tracks []int  `json:"tracks"`
+		} `json:"stream"`
+		StreamKey      string `json:"streamKey"`
+		TotalsentBytes int    `json:"totalsentBytes"`
+		TotalsentTime  int    `json:"totalsentTime"`
+		Url            string `json:"url"`
+		Vhost          string `json:"vhost"`
+	} `json:"response"`
+}
+
 type ResponseStreamInfo struct {
 	BaseResponseOK
 	Response struct {
@@ -98,11 +123,6 @@ type ResponsePush struct {
 	TotalSentTime  int    `json:"totalsentTime"`
 	URL            string `json:"url"`
 	Vhost          string `json:"vhost"`
-}
-
-type ResponsePushes struct {
-	BaseResponseOK
-	Response []ResponsePush `json:"response"`
 }
 
 /*
