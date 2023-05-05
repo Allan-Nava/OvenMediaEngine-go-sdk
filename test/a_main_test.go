@@ -25,7 +25,6 @@ func Test_InitOvenMedia(t *testing.T) {
 	if o == nil {
 		panic("Init Oven Media problem")
 	}
-	return
 }
 
 func Test_HealthCheck(t *testing.T) {
