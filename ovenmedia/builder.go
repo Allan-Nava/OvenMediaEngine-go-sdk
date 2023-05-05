@@ -17,7 +17,7 @@ func BuildOven(url string, debug bool, header *HeaderConfigurator) (IOvenMediaCl
 	// You can override all below settings and options at request level if you want to
 	//--------------------------------------------------------------------------------
 	// Host URL for all request. So you can use relative URL in the request
-	ovenClient.restClient.SetHostURL(url)
+	ovenClient.restClient.SetBaseURL(url)
 	if header != nil {
 		// Headers for all request
 		for h, v := range header.GetHeaders() {
