@@ -2,6 +2,7 @@
 
 [![Go build](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-build.yml/badge.svg)](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-build.yml)
 [![.github/workflows/go-test.yml](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-test.yml/badge.svg)](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-test.yml)
+[![Go Lint](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-lint.yml/badge.svg)](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-lint.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/Allan-Nava/OvenMediaEngine-go-sdk.svg)](https://pkg.go.dev/github.com/Allan-Nava/OvenMediaEngine-go-sdk)
 
 A Go SDK for the OvenMediaEngine, an open-source, distributed and extensible streaming server.
