@@ -16,7 +16,7 @@ func (o *ovenMedia) StartPush(vHost string, appName string, body RequestBodyPush
 		return nil, errs
 	}
 	//
-	resp, err := o.restyPost(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), body)
+	resp, err := o.post(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (o *ovenMedia) StopPush(vHost string, appName string, body RequestBodyPush)
 		// values not valid, deal with errors here
 		return nil, errs
 	}
-	resp, err := o.restyPost(GET_VHOSTS_STOP_BY_NAME(vHost, appName), body)
+	resp, err := o.post(GET_VHOSTS_STOP_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (o *ovenMedia) StopPush(vHost string, appName string, body RequestBodyPush)
 // Get all push lists for a specific application
 func (o *ovenMedia) GetAllPushes(vHost string, appName string) (*ResponsePushes, error) {
 	//
-	resp, err := o.restyPost(GET_VHOSTS_PUSHES_BY_NAME(vHost, appName), nil)
+	resp, err := o.post(GET_VHOSTS_PUSHES_BY_NAME(vHost, appName), nil)
 	if err != nil {
 		return nil, err
 	}

@@ -8,7 +8,7 @@ import (
 
 func (o *ovenMedia) GetThumbnail(appName string) (*resty.Response, error) {
 	//
-	resp, err := o.restyGet(GET_THUMBNAILS(appName), nil)
+	resp, err := o.get(GET_THUMBNAILS(appName), nil)
 	if err != nil {
 		return nil, err
 	}

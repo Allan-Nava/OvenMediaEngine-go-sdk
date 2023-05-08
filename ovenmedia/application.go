@@ -9,7 +9,7 @@ import (
 
 func (o *ovenMedia) GetApplications(host string) (*ResponseVirtualList, error) {
 	url := fmt.Sprintf("%s/%s/apps", V1_HOSTS, host)
-	resp, err := o.restyGet(url, nil)
+	resp, err := o.get(url, nil)
 	if err != nil {
 		return nil, err
 	}

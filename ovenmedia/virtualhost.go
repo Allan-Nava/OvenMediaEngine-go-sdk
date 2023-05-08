@@ -19,7 +19,7 @@ func (o *ovenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 		// values not valid, deal with errors here
 		return nil, errs
 	}
-	resp, err := o.restyPost(V1_HOSTS, body)
+	resp, err := o.post(V1_HOSTS, body)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +34,7 @@ func (o *ovenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error)
 // GET http://1.2.3.4:8081/v1/vhosts
 func (o *ovenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
 	//
-	resp, err := o.restyGet(V1_HOSTS, nil)
+	resp, err := o.get(V1_HOSTS, nil)
 	if err != nil {
 		return nil, err
 	}

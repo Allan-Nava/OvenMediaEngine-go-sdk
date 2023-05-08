@@ -1,9 +1,6 @@
 package ovenmedia
 
 import (
-	"fmt"
-	"strings"
-
 	"github.com/go-resty/resty/v2"
 )
 
@@ -42,7 +39,7 @@ type IOvenMediaClient interface {
 }
 
 func (o *ovenMedia) HealthCheck() error {
-	_, err := o.restyGet(o.Url, nil)
+	_, err := o.get(o.Url, nil)
 	if err != nil {
 		return err
 	}
@@ -55,7 +52,7 @@ func (o *ovenMedia) IsDebug() bool {
 
 // Resty Methods
 
-func (o *ovenMedia) restyPost(url string, body interface{}) (*resty.Response, error) {
+func (o *ovenMedia) post(url string, body interface{}) (*resty.Response, error) {
 	resp, err := o.restClient.R().
 		SetHeader("Accept", "application/json").
 		SetBody(body).
@@ -64,25 +61,15 @@ func (o *ovenMedia) restyPost(url string, body interface{}) (*resty.Response, er
 	if err != nil {
 		return nil, err
 	}
-	if !strings.Contains(resp.Status(), "200") {
-		err = fmt.Errorf("%v", resp)
-		o.debugPrint(err)
-		return nil, err
-	}
 	return resp, nil
 }
 
-func (o *ovenMedia) restyGet(url string, queryParams map[string]string) (*resty.Response, error) {
+func (o *ovenMedia) get(url string, queryParams map[string]string) (*resty.Response, error) {
 	resp, err := o.restClient.R().
 		SetQueryParams(queryParams).
 		Get(url)
-	//
+
 	if err != nil {
-		return nil, err
-	}
-	if !strings.Contains(resp.Status(), "200") {
-		err = fmt.Errorf("%v", resp)
-		o.debugPrint(err)
 		return nil, err
 	}
 	return resp, nil
