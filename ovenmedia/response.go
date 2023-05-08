@@ -54,48 +54,56 @@ type ResponsePushes struct {
 type ResponseStreamInfo struct {
 	BaseResponseOK
 	Response struct {
-		CreatedTime time.Time `json:"createdTime"`
-		SourceType  string    `json:"sourceType"`
-		Tracks      []struct {
-			Id    int    `json:"id"`
-			Type  string `json:"type"`
-			Video struct {
-				Bitrate          string  `json:"bitrate"`
-				Bypass           bool    `json:"bypass"`
-				Codec            string  `json:"codec"`
-				Framerate        float64 `json:"framerate"`
-				HasBframes       bool    `json:"hasBframes"`
-				KeyFrameInterval int     `json:"keyFrameInterval"`
-				Height           int     `json:"height"`
-				Width            int     `json:"width"`
-			} `json:"video,omitempty"`
-			Audio struct {
-				Bitrate    string `json:"bitrate"`
-				Bypass     bool   `json:"bypass"`
-				Channel    int    `json:"channel"`
-				Codec      string `json:"codec"`
-				Samplerate int    `json:"samplerate"`
-			} `json:"audio,omitempty"`
-		} `json:"tracks"`
-	} `json:"input"`
-	Name    string `json:"name"`
-	Outputs []struct {
-		Name   string `json:"name"`
-		Tracks []struct {
-			Id    int    `json:"id"`
-			Type  string `json:"type"`
-			Video struct {
-				Bypass bool `json:"bypass"`
-			} `json:"video,omitempty"`
-			Audio struct {
-				Bypass     bool   `json:"bypass"`
-				Bitrate    string `json:"bitrate,omitempty"`
-				Channel    int    `json:"channel,omitempty"`
-				Codec      string `json:"codec,omitempty"`
-				Samplerate int    `json:"samplerate,omitempty"`
-			} `json:"audio,omitempty"`
-		} `json:"tracks"`
-	} `json:"outputs"`
+		Input struct {
+			CreatedTime time.Time `json:"createdTime"`
+			SourceType  string    `json:"sourceType"`
+			SourceUrl   string    `json:"sourceUrl"`
+			Tracks      []struct {
+				Id    int    `json:"id"`
+				Name  string `json:"name"`
+				Type  string `json:"type"`
+				Video struct {
+					Bitrate   string  `json:"bitrate"`
+					Bypass    bool    `json:"bypass"`
+					Codec     string  `json:"codec"`
+					Framerate float64 `json:"framerate"`
+					Height    int     `json:"height"`
+					Width     int     `json:"width"`
+				} `json:"video,omitempty"`
+				Audio struct {
+					Bitrate    string `json:"bitrate"`
+					Bypass     bool   `json:"bypass"`
+					Channel    int    `json:"channel"`
+					Codec      string `json:"codec"`
+					Samplerate int    `json:"samplerate"`
+				} `json:"audio,omitempty"`
+			} `json:"tracks"`
+		} `json:"input"`
+		Name    string `json:"name"`
+		Outputs []struct {
+			Name   string `json:"name"`
+			Tracks []struct {
+				Id    int    `json:"id"`
+				Name  string `json:"name"`
+				Type  string `json:"type"`
+				Video struct {
+					Bypass    bool    `json:"bypass"`
+					Bitrate   string  `json:"bitrate,omitempty"`
+					Codec     string  `json:"codec,omitempty"`
+					Framerate float64 `json:"framerate,omitempty"`
+					Height    int     `json:"height,omitempty"`
+					Width     int     `json:"width,omitempty"`
+				} `json:"video,omitempty"`
+				Audio struct {
+					Bypass     bool   `json:"bypass"`
+					Bitrate    string `json:"bitrate,omitempty"`
+					Channel    int    `json:"channel,omitempty"`
+					Codec      string `json:"codec,omitempty"`
+					Samplerate int    `json:"samplerate,omitempty"`
+				} `json:"audio,omitempty"`
+			} `json:"tracks"`
+		} `json:"outputs"`
+	} `json:"response"`
 }
 
 // PUSH Stuff
