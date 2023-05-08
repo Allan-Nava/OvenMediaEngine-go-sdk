@@ -50,6 +50,9 @@ func (o *ovenMedia) GetAllPushes(vHost string, appName string) (*ResponsePushes,
 	if err != nil {
 		return nil, err
 	}
+	if resp.StatusCode() == 204 {
+		return nil, nil
+	}
 	var obj ResponsePushes
 	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
 		return nil, err
