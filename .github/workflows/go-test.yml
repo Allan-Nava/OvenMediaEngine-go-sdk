@@ -18,7 +18,8 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ matrix.go-version }}
-          #cache: true
+          cache-dependency-path: subdir/go.sum
+          cache: true
       #
       # You can test your matrix by printing the current Go version
       - name: Display Go version
