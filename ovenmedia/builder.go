@@ -34,9 +34,10 @@ func BuildOven(url string, debug bool, header *HeaderConfigurator) (IOvenMediaCl
 }
 
 //
-
+/*
 func (o *ovenMedia) debugPrint(data interface{}) {
 	if o.debug {
 		log.Println(data)
 	}
 }
+*/
