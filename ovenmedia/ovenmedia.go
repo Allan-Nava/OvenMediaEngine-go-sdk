@@ -26,7 +26,7 @@ type IOvenMediaClient interface {
 	StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error)
 	GetAllPushes(vHost string, appName string) (*ResponsePushes, error)
 	// Recording
-	StartRecording(vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error)
+	StartRecording(url string, vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error)
 	StopRecording(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error)
 	GetRecordingState(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error)
 	// Stats
