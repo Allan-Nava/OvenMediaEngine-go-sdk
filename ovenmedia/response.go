@@ -58,26 +58,7 @@ type ResponseStreamInfo struct {
 			CreatedTime time.Time `json:"createdTime"`
 			SourceType  string    `json:"sourceType"`
 			SourceUrl   string    `json:"sourceUrl"`
-			Tracks      []struct {
-				Id    int    `json:"id"`
-				Name  string `json:"name"`
-				Type  string `json:"type"`
-				Video struct {
-					Bitrate   string  `json:"bitrate"`
-					Bypass    bool    `json:"bypass"`
-					Codec     string  `json:"codec"`
-					Framerate float64 `json:"framerate"`
-					Height    int     `json:"height"`
-					Width     int     `json:"width"`
-				} `json:"video,omitempty"`
-				Audio struct {
-					Bitrate    string `json:"bitrate"`
-					Bypass     bool   `json:"bypass"`
-					Channel    int    `json:"channel"`
-					Codec      string `json:"codec"`
-					Samplerate int    `json:"samplerate"`
-				} `json:"audio,omitempty"`
-			} `json:"tracks"`
+			Tracks      []Track   `json:"tracks"`
 		} `json:"input"`
 		Name    string `json:"name"`
 		Outputs []struct {
@@ -104,6 +85,31 @@ type ResponseStreamInfo struct {
 			} `json:"tracks"`
 		} `json:"outputs"`
 	} `json:"response"`
+}
+
+type Track struct {
+	Id    int    `json:"id"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Video Video  `json:"video,omitempty"`
+	Audio Audio  `json:"audio,omitempty"`
+}
+
+type Audio struct {
+	Bitrate    string `json:"bitrate"`
+	Bypass     bool   `json:"bypass"`
+	Channel    int    `json:"channel"`
+	Codec      string `json:"codec"`
+	Samplerate int    `json:"samplerate"`
+}
+
+type Video struct {
+	Bitrate   string  `json:"bitrate"`
+	Bypass    bool    `json:"bypass"`
+	Codec     string  `json:"codec"`
+	Framerate float64 `json:"framerate"`
+	Height    int     `json:"height"`
+	Width     int     `json:"width"`
 }
 
 // PUSH Stuff
