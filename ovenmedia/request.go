@@ -38,11 +38,11 @@ type RequestRecordingStart struct {
 		Name   string `json:"name"`
 		Tracks []int  `json:"tracks"`
 	} `json:"stream"`
-	FilePath         string `json:"filePath" required:"true" validate:"nonnil,min=1"`
-	InfoPath         string `json:"infoPath" required:"true" validate:"nonnil,min=1"`
-	Interval         int    `json:"interval" required:"true" validate:"nonnil,min=1"`
-	Schedule         string `json:"schedule" required:"true" validate:"nonnil,min=1"`
-	SegmentationRule string `json:"segmentationRule" required:"true" validate:"nonnil,min=1"`
+	FilePath         string  `json:"filePath" required:"true" validate:"nonnil,min=1"`
+	InfoPath         string  `json:"infoPath" required:"true" validate:"nonnil,min=1"`
+	Interval         *int    `json:"interval,omitempty"`
+	Schedule         *string `json:"schedule,omitempty"`
+	SegmentationRule *string `json:"segmentationRule,omitempty"`
 }
 
 /*
