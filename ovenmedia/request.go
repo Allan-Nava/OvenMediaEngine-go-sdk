@@ -5,14 +5,11 @@ type RequestCreateVirtualHost struct {
 }
 
 type RequestBodyPush struct {
-	ID     string `json:"id" required:"true" validate:"nonnil,min=1"`
-	Stream struct {
-		Name   string `json:"name"`
-		Tracks []int  `json:"tracks"`
-	} `json:"stream"`
-	Protocol  string `json:"protocol" required:"true" validate:"nonnil,min=1"`
-	URL       string `json:"url" required:"true" validate:"nonnil,min=1"`
-	StreamKey string `json:"streamKey" required:"true" validate:"nonnil,min=1"`
+	ID        string       `json:"id" required:"true" validate:"nonnil,min=1"`
+	Stream    SimpleStream `json:"stream"`
+	Protocol  string       `json:"protocol" required:"true" validate:"nonnil,min=1"`
+	URL       string       `json:"url" required:"true" validate:"nonnil,min=1"`
+	StreamKey string       `json:"streamKey" required:"true" validate:"nonnil,min=1"`
 }
 
 /* recording */
@@ -33,16 +30,18 @@ type RequestBodyPush struct {
 }
 */
 type RequestRecordingStart struct {
-	ID     string `json:"id" required:"true" validate:"nonnil,min=1"`
-	Stream struct {
-		Name   string `json:"name"`
-		Tracks []int  `json:"tracks"`
-	} `json:"stream"`
-	FilePath         string  `json:"filePath" required:"true" validate:"nonnil,min=1"`
-	InfoPath         string  `json:"infoPath" required:"true" validate:"nonnil,min=1"`
-	Interval         *int    `json:"interval,omitempty"`
-	Schedule         *string `json:"schedule,omitempty"`
-	SegmentationRule *string `json:"segmentationRule,omitempty"`
+	ID               string       `json:"id" required:"true" validate:"nonnil,min=1"`
+	Stream           SimpleStream `json:"stream"`
+	FilePath         string       `json:"filePath" required:"true" validate:"nonnil,min=1"`
+	InfoPath         string       `json:"infoPath" required:"true" validate:"nonnil,min=1"`
+	Interval         *int         `json:"interval,omitempty"`
+	Schedule         *string      `json:"schedule,omitempty"`
+	SegmentationRule *string      `json:"segmentationRule,omitempty"`
+}
+
+type SimpleStream struct {
+	Name   string `json:"name"`
+	Tracks []int  `json:"tracks"`
 }
 
 /*
