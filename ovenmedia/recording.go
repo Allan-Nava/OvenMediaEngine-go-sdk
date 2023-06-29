@@ -4,9 +4,9 @@ import "encoding/json"
 
 //
 
-func (o *ovenMedia) StartRecording(url string, vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error) {
+func (o *ovenMedia) StartRecording(vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error) {
 	//
-	resp, err := o.post(url+GET_VHOSTS_START_RECORDED_BY_NAME(vHost, appName), body)
+	resp, err := o.post(GET_VHOSTS_START_RECORDED_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
 	}
@@ -21,9 +21,8 @@ func (o *ovenMedia) StartRecording(url string, vHost string, appName string, bod
 
 //
 
-func (o *ovenMedia) StopRecording(url string, vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error) {
-	//
-	resp, err := o.post(url+GET_VHOSTS_START_RECORDED_BY_NAME(vHost, appName), body)
+func (o *ovenMedia) StopRecording(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error) {
+	resp, err := o.post(GET_VHOSTS_STOP_RECORDED_BY_NAME(vHost, appName), body)
 	if err != nil {
 		return nil, err
 	}
