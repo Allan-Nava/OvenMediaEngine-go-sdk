@@ -53,10 +53,14 @@ func (o *ovenMedia) IsDebug() bool {
 // Resty Methods
 
 func (o *ovenMedia) post(url string, body interface{}) (*resty.Response, error) {
-	resp, err := o.restClient.R().
-		SetHeader("Accept", "application/json").
-		SetBody(body).
-		Post(url)
+	r := o.restClient.R().
+		SetHeader("Accept", "application/json")
+
+	if body != nil {
+		r.SetBody(body)
+	}
+
+	resp, err := r.Post(url)
 
 	if err != nil {
 		return nil, err
