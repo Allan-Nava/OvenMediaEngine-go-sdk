@@ -2,6 +2,7 @@ package ovenmedia
 
 import (
 	"github.com/go-resty/resty/v2"
+	"reflect"
 )
 
 type ovenMedia struct {
@@ -56,7 +57,7 @@ func (o *ovenMedia) post(url string, body interface{}) (*resty.Response, error) 
 	r := o.restClient.R().
 		SetHeader("Accept", "application/json")
 
-	if body != nil {
+	if !reflect.ValueOf(body).IsNil() {
 		r.SetBody(body)
 	}
 
