@@ -195,6 +195,11 @@ type ResponseRecordingStart struct {
 	Response ResponseRecording `json:"response"`
 }
 
+type ResponseRecordingStateList struct {
+	BaseResponseOK
+	Response []ResponseRecording `json:"response"`
+}
+
 type ResponseRecording struct {
 	State  string `json:"state"`
 	ID     string `json:"id"`

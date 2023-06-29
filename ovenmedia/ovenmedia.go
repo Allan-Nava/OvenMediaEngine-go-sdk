@@ -2,7 +2,6 @@ package ovenmedia
 
 import (
 	"github.com/go-resty/resty/v2"
-	"reflect"
 )
 
 type ovenMedia struct {
@@ -30,6 +29,7 @@ type IOvenMediaClient interface {
 	StartRecording(vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error)
 	StopRecording(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error)
 	GetRecordingState(vHost string, appName string, body *RequestRecordingStop) (*ResponseRecordingStart, error)
+	ListRecordingState(vHost string, appName string) (*ResponseRecordingStateList, error)
 	// Stats
 	GetStatsVhosts(vHost string) (*ResponseStats, error)
 	GetStatsAppVhosts(vHost string, appName string) (*ResponseStats, error)
@@ -53,15 +53,22 @@ func (o *ovenMedia) IsDebug() bool {
 
 // Resty Methods
 
-func (o *ovenMedia) post(url string, body interface{}) (*resty.Response, error) {
-	r := o.restClient.R().
-		SetHeader("Accept", "application/json")
+func (o *ovenMedia) postNoBody(url string) (*resty.Response, error) {
+	resp, err := o.restClient.R().
+		SetHeader("Accept", "application/json").
+		Post(url)
 
-	if !reflect.ValueOf(body).IsNil() {
-		r.SetBody(body)
+	if err != nil {
+		return nil, err
 	}
+	return resp, nil
+}
 
-	resp, err := r.Post(url)
+func (o *ovenMedia) post(url string, body interface{}) (*resty.Response, error) {
+	resp, err := o.restClient.R().
+		SetHeader("Accept", "application/json").
+		SetBody(body).
+		Post(url)
 
 	if err != nil {
 		return nil, err
