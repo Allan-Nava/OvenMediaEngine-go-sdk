@@ -28,7 +28,7 @@ type IOvenMediaClient interface {
 	// Recording
 	StartRecording(vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error)
 	StopRecording(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error)
-	GetRecordingState(vHost string, appName string, body *RequestRecordingStop) (*ResponseRecordingStart, error)
+	GetRecordingState(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error)
 	ListRecordingState(vHost string, appName string) (*ResponseRecordingStateList, error)
 	// Stats
 	GetStatsVhosts(vHost string) (*ResponseStats, error)
