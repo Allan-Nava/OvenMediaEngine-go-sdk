@@ -209,10 +209,10 @@ type ResponseRecording struct {
 		Name   string `json:"name"`
 		Tracks []int  `json:"tracks"`
 	} `json:"stream"`
-	FilePath         string `json:"filePath"`
-	InfoPath         string `json:"infoPath"`
-	Interval         int    `json:"interval"`
-	Schedule         string `json:"schedule"`
-	SegmentationRule string `json:"segmentationRule"`
-	CreatedTime      string `json:"createdTime"`
+	FilePath         string    `json:"filePath"`
+	InfoPath         string    `json:"infoPath"`
+	Interval         int       `json:"interval"`
+	Schedule         string    `json:"schedule"`
+	SegmentationRule string    `json:"segmentationRule"`
+	CreatedTime      time.Time `json:"createdTime"`
 }
