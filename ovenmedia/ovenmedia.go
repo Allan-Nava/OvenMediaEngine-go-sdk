@@ -35,7 +35,7 @@ type IOvenMediaClient interface {
 	GetStatsAppVhosts(vHost string, appName string) (*ResponseStats, error)
 	GetStatsStreamVhosts(vHost string, appName string, stream string) (*ResponseStats, error)
 	// Thumbnail
-	GetThumbnail(appName string) (*resty.Response, error)
+	GetThumbnail(host string, appName string, streamKey string) (*resty.Response, error)
 	//
 }
 
@@ -77,6 +77,17 @@ func (o *ovenMedia) post(url string, body interface{}) (*resty.Response, error) 
 }
 
 func (o *ovenMedia) get(url string, queryParams map[string]string) (*resty.Response, error) {
+	resp, err := o.restClient.R().
+		SetQueryParams(queryParams).
+		Get(url)
+
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (o *ovenMedia) getChangePort(url string, queryParams map[string]string) (*resty.Response, error) {
 	resp, err := o.restClient.R().
 		SetQueryParams(queryParams).
 		Get(url)

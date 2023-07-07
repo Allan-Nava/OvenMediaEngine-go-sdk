@@ -75,8 +75,8 @@ var (
 		return fmt.Sprintf(V1_CURRENT_STATS_APPP_STREAMS_NAME, vhostName, appName, stream)
 	}
 	//
-	GET_THUMBNAILS = func(appName string) string {
-		return fmt.Sprintf("/%s/thumbnail.jpg", appName)
+	GET_THUMBNAIL = func(appName string, streamKey string) string {
+		return fmt.Sprintf("/%s/%s/thumb.png", appName, streamKey)
 	}
 	//
 )
