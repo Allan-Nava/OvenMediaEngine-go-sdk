@@ -1,10 +1,10 @@
 module github.com/Allan-Nava/OvenMediaEngine-go-sdk
 
-go 1.18
+go 1.23.0
 
 require (
-	github.com/go-resty/resty/v2 v2.7.0
+	github.com/go-resty/resty/v2 v2.17.2
 	gopkg.in/validator.v2 v2.0.1
 )
 
-require golang.org/x/net v0.8.0 // indirect
+require golang.org/x/net v0.43.0 // indirect
