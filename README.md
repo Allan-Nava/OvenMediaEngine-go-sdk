@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="https://allan-nava.github.io/OvenMediaEngine-go-sdk/"><img src="docs/logo.svg" width="112" height="112" alt="OvenMediaEngine Go SDK logo"></a>
+</p>
+
 # OvenMediaEngine Go SDK
 
 [![Go build](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-build.yml/badge.svg)](https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/actions/workflows/go-build.yml)
