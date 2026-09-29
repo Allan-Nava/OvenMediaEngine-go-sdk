@@ -40,7 +40,14 @@ CI (`.github/workflows/`): `go-build.yml` (tidy check, build, vet on 1.25.x and 
 `go-test.yml` (race tests, both versions), `go-lint.yml` (golangci-lint v2 + govulncheck),
 `tag-autorelease.yml` (`gh release create --generate-notes` on `v*.*.*`), `contributors.yml`
 (fills the README contributors block). The file names are what the README badges point at —
-rename one and update the badge. Renovate keeps modules and actions current and leaves the `go`
+rename one and update the badge.
+
+`main` is protected: `build (go 1.25.x)`, `build (go stable)`, `test (go 1.25.x)`,
+`test (go stable)` and `lint` must pass before a merge, and force pushes and deletion are
+blocked. No review is required, and admins can bypass, so the owner still pushes directly.
+Renaming a job, or changing a matrix entry, changes its check name: update the protection rule
+too, or merges wait forever on a check that no longer runs. Because the token can't push to a
+protected branch, the contributors action opens a PR instead of committing. Renovate keeps modules and actions current and leaves the `go`
 directive alone; raising the floor means updating the first entry of both CI matrices.
 
 ## Layout
