@@ -33,6 +33,22 @@ func pathStreams(vhost, app string) string { return pathApp(vhost, app) + "/stre
 
 func pathStream(vhost, app, stream string) string { return pathStreams(vhost, app) + "/" + esc(stream) }
 
+func pathScheduledChannels(vhost, app string) string {
+	return pathApp(vhost, app) + "/scheduledChannels"
+}
+
+func pathScheduledChannel(vhost, app, channel string) string {
+	return pathScheduledChannels(vhost, app) + "/" + esc(channel)
+}
+
+func pathMultiplexChannels(vhost, app string) string {
+	return pathApp(vhost, app) + "/multiplexChannels"
+}
+
+func pathMultiplexChannel(vhost, app, channel string) string {
+	return pathMultiplexChannels(vhost, app) + "/" + esc(channel)
+}
+
 func pathStats(vhost string) string { return "/v1/stats/current/vhosts/" + esc(vhost) }
 
 func pathStatsApp(vhost, app string) string { return pathStats(vhost) + "/apps/" + esc(app) }

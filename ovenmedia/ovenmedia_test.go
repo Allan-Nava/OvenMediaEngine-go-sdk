@@ -550,3 +550,182 @@ func TestFlexInt64(t *testing.T) {
 		t.Error(`"fast" accepted as a number`)
 	}
 }
+
+func TestScheduledChannels(t *testing.T) {
+	f := newFake(t)
+	c := f.client(t)
+	const base = "/v1/vhosts/default/apps/app/scheduledChannels"
+
+	video, yes, no := true, true, false
+	channel := ovenmedia.ScheduledChannel{
+		Stream: &ovenmedia.ScheduledChannelStream{Name: "channel", VideoTrack: &video},
+		FallbackProgram: &ovenmedia.ScheduledProgram{Items: []ovenmedia.ScheduledItem{
+			{URL: "file://video/sample.mp4", Start: 0, Duration: 60000},
+		}},
+		Programs: []ovenmedia.ScheduledProgram{{
+			Name: "1", Scheduled: "2023-11-13T20:57:00.000+09", Repeat: &yes,
+			Items: []ovenmedia.ScheduledItem{{URL: "file://video/1.mp4", Duration: 60000}},
+		}},
+	}
+	res, err := c.CreateScheduledChannel(ctx, "default", "app", channel)
+	if err != nil || res.StatusCode != 201 {
+		t.Fatalf("CreateScheduledChannel = %+v, %v", res, err)
+	}
+	wantRequest(t, f, "POST", base, `{"stream":{"name":"channel","videoTrack":true},
+		"fallbackProgram":{"items":[{"url":"file://video/sample.mp4","start":0,"duration":60000}]},
+		"programs":[{"name":"1","scheduled":"2023-11-13T20:57:00.000+09","repeat":true,
+		 "items":[{"url":"file://video/1.mp4","start":0,"duration":60000}]}]}`)
+
+	if _, err := c.CreateScheduledChannel(ctx, "default", "app", ovenmedia.ScheduledChannel{}); !errors.Is(err, ovenmedia.ErrInvalidRequest) {
+		t.Errorf("no stream: err = %v", err)
+	}
+
+	if l, err := c.GetScheduledChannels(ctx, "default", "app"); err != nil || l.Response[0] != "channel" {
+		t.Errorf("GetScheduledChannels = %+v, %v", l, err)
+	}
+
+	info, err := c.GetScheduledChannel(ctx, "default", "app", "channel")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cur := info.Response.CurrentProgram
+	if cur == nil || cur.State != "onair" || cur.CurrentItem.CurrentPosition != 1700 || cur.Duration != -1 || cur.Scheduled.Year() != 2023 {
+		t.Errorf("currentProgram = %+v", cur)
+	}
+	// the programs list uses an hour-only offset: "+09"
+	if p := info.Response.Programs; len(p) != 1 || p[0].Scheduled.UTC().Hour() != 11 {
+		t.Errorf("programs = %+v", p)
+	}
+	if info.Response.Stream.Name != "channel" || info.Response.FallbackProgram.Items[0].Duration != -1 {
+		t.Errorf("channel = %+v", info.Response)
+	}
+
+	patch := ovenmedia.ScheduledChannel{Programs: []ovenmedia.ScheduledProgram{{
+		Name: "2", Scheduled: "2023-11-20T20:57:00.000+09", Repeat: &no,
+		Items: []ovenmedia.ScheduledItem{{URL: "file://video/1.mp4", Duration: -1}},
+	}}}
+	if _, err := c.UpdateScheduledChannel(ctx, "default", "app", "channel", patch); err != nil {
+		t.Error(err)
+	}
+	// an explicit repeat: false is sent
+	wantRequest(t, f, "PATCH", base+"/channel", `{"programs":[{"name":"2","scheduled":"2023-11-20T20:57:00.000+09","repeat":false,
+		"items":[{"url":"file://video/1.mp4","start":0,"duration":-1}]}]}`)
+
+	if _, err := c.DeleteScheduledChannel(ctx, "default", "app", "channel"); err != nil {
+		t.Error(err)
+	}
+	wantRequest(t, f, "DELETE", base+"/channel", "")
+}
+
+func TestMultiplexChannels(t *testing.T) {
+	f := newFake(t)
+	c := f.client(t)
+	const base = "/v1/vhosts/default/apps/app/multiplexChannels"
+
+	abr := true
+	res, err := c.CreateMultiplexChannel(ctx, "default", "app", ovenmedia.MultiplexChannel{
+		OutputStream: ovenmedia.MultiplexOutputStream{Name: "abr"},
+		SourceStreams: []ovenmedia.MultiplexSourceStream{{
+			Name: "input1", URL: "stream://default/app/input1",
+			TrackMap: []ovenmedia.MultiplexTrackMap{
+				{SourceTrackName: "bypass_video", NewTrackName: "input1_video", BitrateConf: 5000000, FramerateConf: 30},
+				{SourceTrackName: "bypass_audio", NewTrackName: "input1_audio", BitrateConf: 128000},
+			},
+		}},
+		Playlists: []ovenmedia.MultiplexPlaylist{{
+			Name: "LLHLS ABR", FileName: "abr",
+			Options:    &ovenmedia.MultiplexPlaylistOptions{WebrtcAutoAbr: &abr},
+			Renditions: []ovenmedia.MultiplexRendition{{Name: "input1", Video: "input1_video", Audio: "input1_audio"}},
+		}},
+	})
+	if err != nil || res.StatusCode != 201 {
+		t.Fatalf("CreateMultiplexChannel = %+v, %v", res, err)
+	}
+	wantRequest(t, f, "POST", base, `{"outputStream":{"name":"abr"},
+		"sourceStreams":[{"name":"input1","url":"stream://default/app/input1","trackMap":[
+		 {"sourceTrackName":"bypass_video","newTrackName":"input1_video","bitrateConf":5000000,"framerateConf":30},
+		 {"sourceTrackName":"bypass_audio","newTrackName":"input1_audio","bitrateConf":128000}]}],
+		"playlists":[{"name":"LLHLS ABR","fileName":"abr","options":{"webrtcAutoAbr":true},
+		 "renditions":[{"name":"input1","video":"input1_video","audio":"input1_audio"}]}]}`)
+
+	for name, bad := range map[string]ovenmedia.MultiplexChannel{
+		"no output": {SourceStreams: []ovenmedia.MultiplexSourceStream{{Name: "a", URL: "stream://default/app/a"}}},
+		"no source": {OutputStream: ovenmedia.MultiplexOutputStream{Name: "abr"}},
+		"no url":    {OutputStream: ovenmedia.MultiplexOutputStream{Name: "abr"}, SourceStreams: []ovenmedia.MultiplexSourceStream{{Name: "a"}}},
+	} {
+		if _, err := c.CreateMultiplexChannel(ctx, "default", "app", bad); !errors.Is(err, ovenmedia.ErrInvalidRequest) {
+			t.Errorf("%s: err = %v", name, err)
+		}
+	}
+
+	if l, err := c.GetMultiplexChannels(ctx, "default", "app"); err != nil || l.Response[0] != "abr" {
+		t.Errorf("GetMultiplexChannels = %+v, %v", l, err)
+	}
+
+	info, err := c.GetMultiplexChannel(ctx, "default", "app", "abr")
+	if err != nil {
+		t.Fatal(err)
+	}
+	m := info.Response
+	if m.State != "Pulling" || !strings.Contains(m.PullingMessage, "input1") || m.OutputStream.Name != "abr" {
+		t.Errorf("channel = %+v", m)
+	}
+	if tm := m.SourceStreams[0].TrackMap[1]; tm.BitrateConf != 5000000 || tm.FramerateConf != 30 {
+		t.Errorf("trackMap = %+v", tm)
+	}
+	if p := m.Playlists[0]; p.Options == nil || p.Options.WebrtcAutoAbr == nil || !*p.Options.WebrtcAutoAbr || p.Renditions[0].Video != "input1_video" {
+		t.Errorf("playlist = %+v", p)
+	}
+
+	if _, err := c.DeleteMultiplexChannel(ctx, "default", "app", "abr"); err != nil {
+		t.Error(err)
+	}
+	wantRequest(t, f, "DELETE", base+"/abr", "")
+}
+
+func TestHlsDump(t *testing.T) {
+	f := newFake(t)
+	c := f.client(t)
+	const stream = "/v1/vhosts/default/apps/app/streams/stream"
+
+	res, err := c.StartHlsDump(ctx, "default", "app", "stream", ovenmedia.RequestHlsDump{
+		ID: "dump1", OutputStreamName: "stream", OutputPath: "/tmp/dump/", Playlist: []string{"llhls.m3u8"},
+	})
+	if err != nil || res.Response[0] != "stream" {
+		t.Fatalf("StartHlsDump = %+v, %v", res, err)
+	}
+	wantRequest(t, f, "POST", stream+":startHlsDump",
+		`{"id":"dump1","outputStreamName":"stream","outputPath":"/tmp/dump/","playlist":["llhls.m3u8"]}`)
+
+	before := f.count()
+	if _, err := c.StartHlsDump(ctx, "default", "app", "stream", ovenmedia.RequestHlsDump{OutputStreamName: "stream"}); !errors.Is(err, ovenmedia.ErrInvalidRequest) {
+		t.Errorf("no id: err = %v", err)
+	}
+	if _, err := c.StartHlsDump(ctx, "default", "app", "stream", ovenmedia.RequestHlsDump{ID: "d"}); !errors.Is(err, ovenmedia.ErrInvalidRequest) {
+		t.Errorf("no output stream: err = %v", err)
+	}
+	if f.count() != before {
+		t.Error("an invalid request reached the server")
+	}
+
+	if _, err := c.StopHlsDump(ctx, "default", "app", "stream", ovenmedia.RequestHlsDumpStop{OutputStreamName: "stream", ID: "dump1"}); err != nil {
+		t.Error(err)
+	}
+	wantRequest(t, f, "POST", stream+":stopHlsDump", `{"outputStreamName":"stream","id":"dump1"}`)
+
+	// without an ID OME stops every dump of the stream
+	if _, err := c.StopHlsDump(ctx, "default", "app", "stream", ovenmedia.RequestHlsDumpStop{OutputStreamName: "stream"}); err != nil {
+		t.Error(err)
+	}
+	wantRequest(t, f, "POST", stream+":stopHlsDump", `{"outputStreamName":"stream"}`)
+}
+
+func TestTimeHourOnlyOffset(t *testing.T) {
+	var got ovenmedia.Time
+	if err := json.Unmarshal([]byte(`"2023-11-13T20:57:00.000+09"`), &got); err != nil {
+		t.Fatal(err)
+	}
+	if got.UTC().Format(time.RFC3339) != "2023-11-13T11:57:00Z" {
+		t.Errorf("got %s", got.UTC())
+	}
+}

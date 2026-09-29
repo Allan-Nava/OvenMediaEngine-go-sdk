@@ -67,13 +67,11 @@ fmt.Println(hosts.Response) // [default]
 ## What's covered
 
 Virtual hosts, applications and output profiles (create, list, get, update, delete), streams
-(pull, list, info, delete, `:sendEvent`), pushes (`:startPush`, `:stopPush`, `:pushes`),
+(pull, list, info, delete, `:sendEvent`, HLS dumps), scheduled and multiplex channels, pushes (`:startPush`, `:stopPush`, `:pushes`),
 recordings (`:startRecord`, `:stopRecord`, `:records`), current statistics, the version and
 thumbnails. The [project site](https://allan-nava.github.io/OvenMediaEngine-go-sdk/#api) maps
 each method to its endpoint, and there is a runnable example for each area on
 [pkg.go.dev](https://pkg.go.dev/github.com/Allan-Nava/OvenMediaEngine-go-sdk/ovenmedia#pkg-examples).
-
-Not covered yet: scheduled channels, multiplex channels and HLS dumps.
 
 ## Upgrading from v0.4
 
