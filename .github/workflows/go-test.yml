@@ -1,39 +1,34 @@
-name: Go test workflow
-on: [push]
-#
-env:
-  APP_ENV: runner
-#
+name: Go test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  test:
+    name: test (go ${{ matrix.go }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        go-version: [ '1.18.x', '1.19.x' ]
-    #
+        # the go.mod floor, plus whatever is current
+        go: ['1.25.x', 'stable']
     steps:
-      - uses: actions/checkout@v3
-      #
-      - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v4
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-go@v7
         with:
-          go-version: ${{ matrix.go-version }}
-          cache-dependency-path: subdir/go.sum
-          cache: true
-      #
-      # You can test your matrix by printing the current Go version
-      - name: Display Go version
-        run: go version
-      #
-      - name: Install dependencies
-        run: go mod tidy 
-      #
-      - name: Build
-        run: go build -v ./... 
-      #
-      - name: Test with the Go CLI
-        run: go test -v ./...
-      #
-    #
-  #
-#
+          go-version: ${{ matrix.go }}
+
+      # test/ is skipped without OME_URL: unit tests only, no network
+      - name: Test
+        run: go test -race -count=1 ./...
