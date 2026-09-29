@@ -28,7 +28,7 @@ Ids are stable: when an item is fixed, write `fixed in <sha>` next to it rather 
 | A-10 | fixed in `9470355`: `WithDebug` redacts `Authorization` in the log |
 | A-11 | fixed in `9470355`: `ctx` on every method, 30s default timeout, `WithHTTPClient` |
 | A-12, A-13 | fixed in `9470355`: no stdout output; typed reply; empty list on 204 |
-| A-14, A-15 | fixed in `9470355`: `httptest` suite (78.6% coverage, every v0.4 bug re-introduced to check it fails) and 16 examples checked by `TestExamplesAreDocumented`; `test/` is an opt-in read-only integration suite |
+| A-14, A-15 | fixed in `9470355`: `httptest` suite (78.6% coverage, every v0.4 bug re-introduced to check it fails) and 15 examples checked by `TestExamplesAreDocumented`; `test/` is an opt-in read-only integration suite |
 | A-16 | fixed in `9470355` for the path builders (unexported functions, names escaped). The enum constants (`LIVE`, `H264`...) keep their names for compatibility |
 | A-17 | fixed in `9470355`: `New` validates the URL, `baseURL` unexported, `getChangePort` removed, `CodecAudio` split from `CodecVideo` |
 | A-18 | fixed in `77dfe17` |
