@@ -14,8 +14,7 @@ Ids are stable: when an item is fixed, write `fixed in <sha>` next to it rather 
 
 ## Resolution (branch `fix/audit`, for v0.5.0)
 
-`9470355` is the SDK rewrite, `77dfe17` the CI rebuild. Items marked **open** need an action this
-session couldn't take (deleting files) or are still out of scope.
+`9470355` is the SDK rewrite, `77dfe17` the CI rebuild. Items marked **open** are still out of scope.
 
 | id | Status |
 |---|---|
@@ -37,10 +36,10 @@ session couldn't take (deleting files) or are still out of scope.
 | A-20 | **partly open**: version, vhost get/delete, application CRUD, output profiles, stream create/delete and `:sendEvent` added in `9470355`. Scheduled channels, multiplex channels and HLS dumps are still missing |
 | A-21 | fixed in `9470355`: resty v2.17.2, `golang.org/x/net` v0.58.0, Go 1.25; govulncheck reports no vulnerabilities |
 | A-22 | fixed in `77dfe17` |
-| A-23 | fixed in `77dfe17`; **open**: `.github/workflows/release.yml.old` is still in the tree, to delete |
-| A-24 | Renovate config fixed in `77dfe17`; **open**: `.github/dependabot.yml` is still there and will duplicate Renovate's PRs, to delete |
+| A-23 | fixed in `77dfe17`; `release.yml.old` removed in the cleanup commit |
+| A-24 | fixed: Renovate config in `77dfe17`, `dependabot.yml` removed in the cleanup commit |
 | A-25, A-26 | fixed by the Pages rewrite |
-| A-27 | `.gitignore` fixed in `77dfe17`; **open**: `.vscode/launch.json` is still tracked (`git rm --cached`) |
+| A-27 | fixed: `.gitignore` in `77dfe17`, `.vscode/` untracked in the cleanup commit |
 | A-28 | fixed in `9470355` (found while fixing): current OME sends `bitrate` as a number, older versions as a string; the v0.4 `string` field made `GetStreamInfo` fail on current servers. Now `FlexInt64` |
 
 ## Summary
