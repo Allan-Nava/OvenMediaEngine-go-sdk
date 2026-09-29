@@ -18,60 +18,81 @@ MPEG-TS and RTSP and delivers LL-HLS and WebRTC.
 go get github.com/Allan-Nava/OvenMediaEngine-go-sdk
 ```
 
-The package lives in the `ovenmedia` subdirectory.
+The package lives in the `ovenmedia` subdirectory. Requires Go 1.25 or newer.
 
 ## Usage
 
 Enable the API server in OME's `Server.xml` (`<Bind><Managers><API>`, commonly port `8081`) and
-set an `AccessToken`. OME expects `Authorization: Basic base64(AccessToken)`.
+set an `AccessToken`. The client sends it as `Authorization: Basic base64(AccessToken)`.
 
 ```go
 import (
+	"context"
+	"errors"
 	"fmt"
 	"log"
 
 	"github.com/Allan-Nava/OvenMediaEngine-go-sdk/ovenmedia"
 )
 
-headers := ovenmedia.InitHeaderConfigurator()
-headers.CreateBasicAuthHeader("admin", "secret") // AccessToken "admin:secret"
-
-client, err := ovenmedia.BuildOven("http://ome.example.com:8081", false, headers)
+client, err := ovenmedia.New("http://ome.example.com:8081",
+	ovenmedia.WithAccessToken("admin:secret"), // the AccessToken from Server.xml
+)
 if err != nil {
 	log.Fatal(err)
 }
 
-hosts, err := client.GetAllVirtualHosts()
-if err != nil {
-	log.Fatal(err)
-}
-if hosts.StatusCode != 200 { // OME error replies are decoded, not returned as err
-	log.Fatalf("OME: %d %s", hosts.StatusCode, hosts.Message)
+hosts, err := client.GetAllVirtualHosts(context.Background())
+var apiErr *ovenmedia.APIError
+if errors.As(err, &apiErr) {
+	log.Fatalf("OME said %d: %s", apiErr.StatusCode, apiErr.Message)
+} else if err != nil {
+	log.Fatal(err) // network, timeout, or ovenmedia.ErrInvalidRequest
 }
 fmt.Println(hosts.Response) // [default]
 ```
 
-Always check `StatusCode` as well as `err`: the client doesn't yet turn HTTP errors into Go
-errors. Don't enable `debug` in production, because it logs request headers, including
-`Authorization`.
+- Every method takes a `context.Context`; requests time out after 30s unless you pass
+  `WithTimeout` or your own client with `WithHTTPClient`.
+- A non-2xx reply from OME is an `*ovenmedia.APIError`. A request the SDK can tell is invalid
+  (a push without a URL, say) fails with `ovenmedia.ErrInvalidRequest` before it is sent.
+- `WithDebug(true)` logs requests and replies with the `Authorization` header redacted.
+- Thumbnails are served by OME's publisher port, so `GetThumbnail` takes that URL separately and
+  doesn't send the API credentials to it.
 
 ## What's covered
 
-`IOvenMediaClient` covers virtual hosts, applications, streams, pushes (`:startPush`,
-`:stopPush`, `:pushes`), recordings (`:startRecord`, `:stopRecord`, `:records`), current
-statistics and thumbnails. The [project site](https://allan-nava.github.io/OvenMediaEngine-go-sdk/#api)
-lists each method with its endpoint and status.
+Virtual hosts, applications and output profiles (create, list, get, update, delete), streams
+(pull, list, info, delete, `:sendEvent`), pushes (`:startPush`, `:stopPush`, `:pushes`),
+recordings (`:startRecord`, `:stopRecord`, `:records`), current statistics, the version and
+thumbnails. The [project site](https://allan-nava.github.io/OvenMediaEngine-go-sdk/#api) maps
+each method to its endpoint, and there is a runnable example for each area on
+[pkg.go.dev](https://pkg.go.dev/github.com/Allan-Nava/OvenMediaEngine-go-sdk/ovenmedia#pkg-examples).
 
-## Status
+Not covered yet: scheduled channels, multiplex channels and HLS dumps.
 
-Pre-1.0. An audit against the current OME docs found methods that don't work yet
-(`CreateVirtualHost`, the three stats methods, `GetRecordingState`) along with other issues.
-They are listed, with stable ids and suggested fixes, in [AUDIT.md](AUDIT.md).
+## Upgrading from v0.4
+
+v0.5.0 is a breaking release: see [AUDIT.md](AUDIT.md) for what changed and why. In short, add
+a `ctx` as the first argument everywhere, replace `BuildOven` with `New` (it still works, but is
+deprecated), pass an ID to `StopPush`, `StopRecording` and `GetRecordingState`, and handle
+`*APIError` instead of checking `StatusCode`.
+
+## Testing
+
+```bash
+make test lint
+```
+
+Unit tests run against an `httptest` fake that serves the replies from the OME docs, so they
+need no server. `make integration OME_URL=... OME_ACCESS_TOKEN=...` runs read-only checks against
+a real OME.
 
 ## Contributing
 
 Contributions are welcome: open an issue or a pull request. Read [CLAUDE.md](CLAUDE.md) for the
-layout, conventions and definition of done. Tests must use `httptest`, not a live server.
+layout, conventions and definition of done: tests first, against the fake, and an example for
+any public change.
 
 ## Contributors
 

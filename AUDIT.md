@@ -12,6 +12,37 @@ SDK sends, and the test prints what the SDK decodes. The probe was not committed
 
 Ids are stable: when an item is fixed, write `fixed in <sha>` next to it rather than deleting it.
 
+## Resolution (branch `fix/audit`, for v0.5.0)
+
+`9470355` is the SDK rewrite, `77dfe17` the CI rebuild. Items marked **open** need an action this
+session couldn't take (deleting files) or are still out of scope.
+
+| id | Status |
+|---|---|
+| A-01 | fixed in `9470355`: `CreateVirtualHost(ctx, ...VirtualHostConfig)` sends and decodes arrays |
+| A-02, A-03 | fixed in `9470355`: `/streams/` path, `ResponseStats.Response` holds the stats, with `connections` and the throughput fields |
+| A-04 | fixed in `9470355`: non-2xx replies return `*APIError`; `HealthCheck` calls `/v1/version` |
+| A-05 | fixed in `9470355`: `GetRecordingState(ctx, vhost, app, id)` returns the list |
+| A-06 | fixed in `9470355`: `ovenmedia.Time` accepts `+09:00` and `+0900` |
+| A-07, A-08 | fixed in `9470355`: stream key required for RTMP only, `StopPush` takes an ID, recording paths optional, `trackIds`/`variantNames` supported; `validator.v2` removed |
+| A-09 | fixed in `9470355`: `CreateOmeBasicAuthHeader*` set `Authorization`, deprecated |
+| A-10 | fixed in `9470355`: `WithDebug` redacts `Authorization` in the log |
+| A-11 | fixed in `9470355`: `ctx` on every method, 30s default timeout, `WithHTTPClient` |
+| A-12, A-13 | fixed in `9470355`: no stdout output; typed reply; empty list on 204 |
+| A-14, A-15 | fixed in `9470355`: `httptest` suite (78.6% coverage, every v0.4 bug re-introduced to check it fails) and 16 examples checked by `TestExamplesAreDocumented`; `test/` is an opt-in read-only integration suite |
+| A-16 | fixed in `9470355` for the path builders (unexported functions, names escaped). The enum constants (`LIVE`, `H264`...) keep their names for compatibility |
+| A-17 | fixed in `9470355`: `New` validates the URL, `baseURL` unexported, `getChangePort` removed, `CodecAudio` split from `CodecVideo` |
+| A-18 | fixed in `77dfe17` |
+| A-19 | fixed by the README rewrite |
+| A-20 | **partly open**: version, vhost get/delete, application CRUD, output profiles, stream create/delete and `:sendEvent` added in `9470355`. Scheduled channels, multiplex channels and HLS dumps are still missing |
+| A-21 | fixed in `9470355`: resty v2.17.2, `golang.org/x/net` v0.58.0, Go 1.25; govulncheck reports no vulnerabilities |
+| A-22 | fixed in `77dfe17` |
+| A-23 | fixed in `77dfe17`; **open**: `.github/workflows/release.yml.old` is still in the tree, to delete |
+| A-24 | Renovate config fixed in `77dfe17`; **open**: `.github/dependabot.yml` is still there and will duplicate Renovate's PRs, to delete |
+| A-25, A-26 | fixed by the Pages rewrite |
+| A-27 | `.gitignore` fixed in `77dfe17`; **open**: `.vscode/launch.json` is still tracked (`git rm --cached`) |
+| A-28 | fixed in `9470355` (found while fixing): current OME sends `bitrate` as a number, older versions as a string; the v0.4 `string` field made `GetStreamInfo` fail on current servers. Now `FlexInt64` |
+
 ## Summary
 
 | Area | Result |

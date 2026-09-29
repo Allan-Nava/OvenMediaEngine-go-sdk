@@ -271,17 +271,14 @@ footer a { color: var(--fg-muted); }
   .reveal.in { opacity: 1; transform: none; }
 }
 
-/* status pills (OME site only) */
-:root { --warn: #b26a00; --bad: #c2334d; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --warn: #f0b04a; --bad: #ff7a90; } }
-:root[data-theme="dark"] { --warn: #f0b04a; --bad: #ff7a90; }
-.pill { font: 600 12px Inter, sans-serif; padding: 2px 9px; border-radius: 999px; white-space: nowrap; }
-.pill.ok { color: var(--mint); background: color-mix(in srgb, var(--mint) 13%, transparent); }
-.pill.warn { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
-.pill.bad { color: var(--bad); background: color-mix(in srgb, var(--bad) 13%, transparent); }
+/* OME site */
+:root { --bad: #c2334d; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bad: #ff7a90; } }
+:root[data-theme="dark"] { --bad: #ff7a90; }
 td .cmd.verb { color: var(--accent); background: var(--accent-soft); margin-right: 6px; }
-#api table { min-width: 1000px; }
-#api td.d { min-width: 300px; }
+#api table { min-width: 960px; }
+#api td.d { min-width: 280px; }
+#api td.m { white-space: normal; }
 .diagram .err { stroke: var(--bad); }
 .diagram .head.err { fill: var(--bad); stroke: none; }
 </style>
@@ -316,7 +313,7 @@ td .cmd.verb { color: var(--accent); background: var(--accent-soft); margin-righ
       <div>
         <span class="eyebrow"><span class="dot"></span>Open source &middot; MIT</span>
         <h1>Drive <span class="grad">OvenMediaEngine</span> from Go</h1>
-        <p class="lede">A Go client for the OME REST API v1. Create virtual hosts, list applications and streams, start pushes and recordings, and read live stats, with request and response structs instead of hand-written JSON.</p>
+        <p class="lede">A Go client for the OME REST API v1. Manage virtual hosts, applications and output profiles, pull streams, start pushes and recordings, and read live stats, with typed requests, typed errors and a context on every call.</p>
         <div class="cta">
           <a class="btn primary" href="#quickstart">
             Get started
@@ -334,16 +331,17 @@ td .cmd.verb { color: var(--accent); background: var(--accent-soft); margin-righ
       <div class="window" aria-label="Example code">
         <div class="window-bar"><i></i><i></i><i></i><span>push.go</span></div>
 <pre><code><span class="c">// Restream a live input to an RTMP ingest</span>
-res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</span>, <span class="s">"app"</span>, ovenmedia.<span class="t">RequestBodyPush</span>{
+res, err := client.<span class="f">StartPush</span>(ctx, <span class="s">"default"</span>, <span class="s">"app"</span>, ovenmedia.<span class="t">RequestBodyPush</span>{
     ID:        <span class="s">"youtube-1"</span>,
     Stream:    ovenmedia.<span class="t">SimpleStream</span>{Name: <span class="s">"stream"</span>},
     Protocol:  <span class="s">"rtmp"</span>,
     URL:       <span class="s">"rtmp://ingest.example.com/live2"</span>,
     StreamKey: <span class="s">"KEY"</span>,
 })
-<span class="k">if</span> err == <span class="k">nil</span> &amp;&amp; res.StatusCode == <span class="s">200</span> {
-    fmt.<span class="f">Println</span>(res.Response.State) <span class="c">// "ready"</span>
-}</code></pre>
+<span class="k">if</span> err != <span class="k">nil</span> {
+    <span class="k">return</span> err <span class="c">// *ovenmedia.APIError on a 4xx/5xx</span>
+}
+fmt.<span class="f">Println</span>(res.Response.State) <span class="c">// "ready"</span></code></pre>
       </div>
     </div>
   </div>
@@ -357,17 +355,17 @@ res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</s
         <div class="card reveal">
           <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"/></svg></div>
           <h3>Typed payloads</h3>
-          <p>Structs for push and recording requests, stream info, push lists and stats, so a misspelt field fails at compile time, not on the server.</p>
+          <p>Structs for pushes, recordings, streams and stats, decoded from the shapes OME actually sends, including the timestamp and bitrate formats that differ between versions.</p>
         </div>
         <div class="card reveal">
           <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg></div>
-          <h3>One interface</h3>
-          <p><code>IOvenMediaClient</code> is the whole surface. Depend on it in your code and swap in a fake in your tests.</p>
+          <h3>Errors you can't miss</h3>
+          <p>A 401 or 404 comes back as an <code>*APIError</code> with OME's status and message, never as a zero-valued struct and a <code>nil</code> error.</p>
         </div>
         <div class="card reveal">
           <div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
-          <h3>Headers once</h3>
-          <p>A <code>HeaderConfigurator</code> carries the Basic auth header and anything else your proxy needs, applied to every request.</p>
+          <h3>Your client, your limits</h3>
+          <p>A <code>context.Context</code> on every call, a 30s default timeout, and <code>WithHTTPClient</code> for your own transport, TLS and proxies.</p>
         </div>
       </div>
     </div>
@@ -381,14 +379,16 @@ res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</s
       <div class="steps">
         <ol class="step-list">
           <li><b>Install</b><span><code>go get</code> the module and import the <code>ovenmedia</code> package.</span></li>
-          <li><b>Authenticate</b><span>Put the <code>AccessToken</code> in a Basic auth header.</span></li>
-          <li><b>Call</b><span>Check <code>err</code> <em>and</em> <code>StatusCode</code>: OME's error replies come back as a decoded struct.</span></li>
+          <li><b>Authenticate</b><span>Pass the <code>AccessToken</code> with <code>WithAccessToken</code>.</span></li>
+          <li><b>Call</b><span>Every method takes a context; OME's error replies come back as <code>*APIError</code>.</span></li>
         </ol>
         <div class="window">
           <div class="window-bar"><i></i><i></i><i></i><span>main.go</span><button class="copy" type="button" data-copy="#qs-code">Copy</button></div>
 <pre><code id="qs-code"><span class="k">package</span> main
 
 <span class="k">import</span> (
+    <span class="s">"context"</span>
+    <span class="s">"errors"</span>
     <span class="s">"fmt"</span>
     <span class="s">"log"</span>
 
@@ -396,21 +396,19 @@ res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</s
 )
 
 <span class="k">func</span> <span class="f">main</span>() {
-    headers := ovenmedia.<span class="f">InitHeaderConfigurator</span>()
-    <span class="c">// AccessToken "admin:secret" -> Authorization: Basic YWRtaW46c2VjcmV0</span>
-    headers.<span class="f">CreateBasicAuthHeader</span>(<span class="s">"admin"</span>, <span class="s">"secret"</span>)
-
-    client, err := ovenmedia.<span class="f">BuildOven</span>(<span class="s">"http://ome.example.com:8081"</span>, <span class="k">false</span>, headers)
+    client, err := ovenmedia.<span class="f">New</span>(<span class="s">"http://ome.example.com:8081"</span>,
+        ovenmedia.<span class="f">WithAccessToken</span>(<span class="s">"admin:secret"</span>),
+    )
     <span class="k">if</span> err != <span class="k">nil</span> {
         log.<span class="f">Fatal</span>(err)
     }
 
-    hosts, err := client.<span class="f">GetAllVirtualHosts</span>()
-    <span class="k">if</span> err != <span class="k">nil</span> {
+    hosts, err := client.<span class="f">GetAllVirtualHosts</span>(context.<span class="f">Background</span>())
+    <span class="k">var</span> apiErr *ovenmedia.<span class="t">APIError</span>
+    <span class="k">if</span> errors.<span class="f">As</span>(err, &amp;apiErr) {
+        log.<span class="f">Fatalf</span>(<span class="s">"OME said %d: %s"</span>, apiErr.StatusCode, apiErr.Message)
+    } <span class="k">else if</span> err != <span class="k">nil</span> {
         log.<span class="f">Fatal</span>(err)
-    }
-    <span class="k">if</span> hosts.StatusCode != <span class="s">200</span> {
-        log.<span class="f">Fatalf</span>(<span class="s">"OME: %d %s"</span>, hosts.StatusCode, hosts.Message)
     }
     fmt.<span class="f">Println</span>(hosts.Response) <span class="c">// [default]</span>
 }</code></pre>
@@ -423,28 +421,33 @@ res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</s
     <div class="wrap">
       <p class="kicker">API</p>
       <h2>What the client covers</h2>
-      <p class="section-lede">Each method maps to one OME endpoint. Paths are relative to the API base URL; request and response semantics are in the <a href="https://ovenmedia.com/docs/ome/rest-api/v1">OME REST API reference</a>. The status column is from the <a href="#status">audit</a> against those docs.</p>
+      <p class="section-lede">Each method maps to one OME endpoint; paths are relative to the API base URL. Field-level docs and runnable <a href="https://pkg.go.dev/github.com/Allan-Nava/OvenMediaEngine-go-sdk/ovenmedia#pkg-examples">examples</a> are on pkg.go.dev, semantics in the <a href="https://ovenmedia.com/docs/ome/rest-api/v1">OME REST API reference</a>.</p>
       <div class="table-wrap reveal">
         <table>
-          <thead><tr><th>Method</th><th>Endpoint</th><th>Status</th><th>What it does</th></tr></thead>
+          <thead><tr><th>Method</th><th>Endpoint</th><th>What it does</th></tr></thead>
           <tbody>
-            <tr><td class="m">HealthCheck()</td><td><span class="cmd verb">GET</span><span class="cmd">/</span></td><td><span class="pill warn">caveat</span></td><td class="d">Requests the base URL. Only a network failure is an error; a 401 or 500 still counts as healthy.</td></tr>
-            <tr><td class="m">GetAllVirtualHosts()</td><td><span class="cmd verb">GET</span><span class="cmd">/v1/vhosts</span></td><td><span class="pill ok">works</span></td><td class="d">Lists virtual host names.</td></tr>
-            <tr><td class="m">CreateVirtualHost(name)</td><td><span class="cmd verb">POST</span><span class="cmd">/v1/vhosts</span></td><td><span class="pill bad">broken</span></td><td class="d">Creates a virtual host. The body and reply shapes don't match OME's arrays (A-01).</td></tr>
-            <tr><td class="m">GetApplications(vhost)</td><td><span class="cmd verb">GET</span><span class="cmd">…/{vhost}/apps</span></td><td><span class="pill ok">works</span></td><td class="d">Lists the applications of a virtual host.</td></tr>
-            <tr><td class="m">GetStreams(vhost, app)</td><td><span class="cmd verb">GET</span><span class="cmd">…/apps/{app}/streams</span></td><td><span class="pill ok">works</span></td><td class="d">Lists stream names in an application.</td></tr>
-            <tr><td class="m">GetStreamInfo(vhost, app, stream)</td><td><span class="cmd verb">GET</span><span class="cmd">…/streams/{stream}</span></td><td><span class="pill warn">caveat</span></td><td class="d">Input source, tracks and output renditions of a stream. Timestamps must be RFC 3339 to decode (A-06).</td></tr>
-            <tr><td class="m">StartPush(vhost, app, body)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:startPush</span></td><td><span class="pill warn">caveat</span></td><td class="d">Pushes a stream out over RTMP, SRT or MPEG-TS. Client-side validation requires a stream key even where OME doesn't (A-07).</td></tr>
-            <tr><td class="m">StopPush(vhost, app, body)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:stopPush</span></td><td><span class="pill warn">caveat</span></td><td class="d">Stops a push by ID. Needs the full push body to pass validation; returns the raw response (A-07, A-12).</td></tr>
-            <tr><td class="m">GetAllPushes(vhost, app)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:pushes</span></td><td><span class="pill warn">caveat</span></td><td class="d">Lists pushes with their state and byte counters. Returns <code>nil, nil</code> on 204 (A-13).</td></tr>
-            <tr><td class="m">StartRecording(vhost, app, body)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:startRecord</span></td><td><span class="pill warn">caveat</span></td><td class="d">Records a stream to file, optionally split by interval or schedule. See A-06, A-08.</td></tr>
-            <tr><td class="m">StopRecording(vhost, app, body)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:stopRecord</span></td><td><span class="pill warn">caveat</span></td><td class="d">Stops a recording by ID (A-06).</td></tr>
-            <tr><td class="m">ListRecordingState(vhost, app)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:records</span></td><td><span class="pill warn">caveat</span></td><td class="d">Lists every recording task and its state (A-06).</td></tr>
-            <tr><td class="m">GetRecordingState(vhost, app, body)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:records</span></td><td><span class="pill bad">broken</span></td><td class="d">One recording by ID. Decodes OME's array into a single object and always errors (A-05).</td></tr>
-            <tr><td class="m">GetStatsVhosts(vhost)</td><td><span class="cmd verb">GET</span><span class="cmd">/v1/stats/current/vhosts/{vhost}</span></td><td><span class="pill bad">broken</span></td><td class="d">Connection and byte counters. The <code>response</code> wrapper isn't decoded, so every field is 0 (A-03).</td></tr>
-            <tr><td class="m">GetStatsAppVhosts(vhost, app)</td><td><span class="cmd verb">GET</span><span class="cmd">…/vhosts/{vhost}/apps/{app}</span></td><td><span class="pill bad">broken</span></td><td class="d">Same, per application (A-03).</td></tr>
-            <tr><td class="m">GetStatsStreamVhosts(vhost, app, stream)</td><td><span class="cmd verb">GET</span><span class="cmd">…/apps/{app}/streams/{stream}</span></td><td><span class="pill bad">broken</span></td><td class="d">Same, per stream. The SDK requests <code>/stream/</code> instead of <code>/streams/</code> (A-02, A-03).</td></tr>
-            <tr><td class="m">GetThumbnail(host, app, stream)</td><td><span class="cmd verb">GET</span><span class="cmd">{host}/{app}/{stream}/thumb.png</span></td><td><span class="pill ok">works</span></td><td class="d">Fetches the latest thumbnail from the publisher port (not the API port); pass the full <code>host</code> URL.</td></tr>
+            <tr><td class="m">HealthCheck(ctx)</td><td><span class="cmd verb">GET</span><span class="cmd">/v1/version</span></td><td class="d">Fails when OME is unreachable or rejects the token.</td></tr>
+            <tr><td class="m">GetVersion(ctx)</td><td><span class="cmd verb">GET</span><span class="cmd">/v1/version</span></td><td class="d">OME version and git build.</td></tr>
+            <tr><td class="m">CreateVirtualHost(ctx, vhosts...)</td><td><span class="cmd verb">POST</span><span class="cmd">/v1/vhosts</span></td><td class="d">Creates virtual hosts, with optional host names and TLS paths.</td></tr>
+            <tr><td class="m">GetAllVirtualHosts(ctx)</td><td><span class="cmd verb">GET</span><span class="cmd">/v1/vhosts</span></td><td class="d">Lists virtual host names.</td></tr>
+            <tr><td class="m">GetVirtualHost / DeleteVirtualHost</td><td><span class="cmd verb">GET</span><span class="cmd verb">DELETE</span><span class="cmd">/v1/vhosts/{vhost}</span></td><td class="d">Reads or deletes one virtual host.</td></tr>
+            <tr><td class="m">CreateApplication(ctx, vhost, apps...)</td><td><span class="cmd verb">POST</span><span class="cmd">…/{vhost}/apps</span></td><td class="d">Creates applications; providers, publishers and profiles as raw JSON.</td></tr>
+            <tr><td class="m">GetApplications(ctx, vhost)</td><td><span class="cmd verb">GET</span><span class="cmd">…/{vhost}/apps</span></td><td class="d">Lists applications.</td></tr>
+            <tr><td class="m">GetApplication / UpdateApplication / DeleteApplication</td><td><span class="cmd verb">GET</span><span class="cmd verb">PATCH</span><span class="cmd verb">DELETE</span><span class="cmd">…/apps/{app}</span></td><td class="d">Reads, patches or deletes one application.</td></tr>
+            <tr><td class="m">CreateOutputProfile / GetOutputProfiles</td><td><span class="cmd verb">POST</span><span class="cmd verb">GET</span><span class="cmd">…/apps/{app}/outputProfiles</span></td><td class="d">Adds transcoding profiles or lists them.</td></tr>
+            <tr><td class="m">GetOutputProfile / DeleteOutputProfile</td><td><span class="cmd verb">GET</span><span class="cmd verb">DELETE</span><span class="cmd">…/outputProfiles/{profile}</span></td><td class="d">Reads or deletes one profile.</td></tr>
+            <tr><td class="m">CreateStream(ctx, vhost, app, req)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}/streams</span></td><td class="d">Pulls a stream from RTSP, OVT or SRT URLs.</td></tr>
+            <tr><td class="m">GetStreams(ctx, vhost, app)</td><td><span class="cmd verb">GET</span><span class="cmd">…/apps/{app}/streams</span></td><td class="d">Lists stream names.</td></tr>
+            <tr><td class="m">GetStreamInfo / DeleteStream</td><td><span class="cmd verb">GET</span><span class="cmd verb">DELETE</span><span class="cmd">…/streams/{stream}</span></td><td class="d">Input source, connection, tracks and outputs; or deletes the stream.</td></tr>
+            <tr><td class="m">SendEvent(ctx, vhost, app, stream, req)</td><td><span class="cmd verb">POST</span><span class="cmd">…/streams/{stream}:sendEvent</span></td><td class="d">Inserts ID3v2 timed metadata.</td></tr>
+            <tr><td class="m">StartPush(ctx, vhost, app, req)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:startPush</span></td><td class="d">Pushes a stream over RTMP, SRT or MPEG-TS. The stream key is only required for RTMP.</td></tr>
+            <tr><td class="m">StopPush(ctx, vhost, app, id)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:stopPush</span></td><td class="d">Stops a push.</td></tr>
+            <tr><td class="m">GetAllPushes(ctx, vhost, app)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:pushes</span></td><td class="d">Lists pushes with state and byte counters; empty list when there are none.</td></tr>
+            <tr><td class="m">StartRecording(ctx, vhost, app, req)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:startRecord</span></td><td class="d">Records a stream, optionally split by interval or schedule.</td></tr>
+            <tr><td class="m">StopRecording(ctx, vhost, app, id)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:stopRecord</span></td><td class="d">Stops a recording.</td></tr>
+            <tr><td class="m">ListRecordingState / GetRecordingState</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:records</span></td><td class="d">Every recording, or the one with an ID.</td></tr>
+            <tr><td class="m">GetStatsVhosts / GetStatsAppVhosts / GetStatsStreamVhosts</td><td><span class="cmd verb">GET</span><span class="cmd">/v1/stats/current/vhosts/…</span></td><td class="d">Connections per protocol, bytes and throughput, per virtual host, application or stream.</td></tr>
+            <tr><td class="m">GetThumbnail(ctx, publisherURL, app, stream, format)</td><td><span class="cmd verb">GET</span><span class="cmd">{publisher}/{app}/{stream}/thumb.png</span></td><td class="d">Latest thumbnail from the publisher port, without the API credentials.</td></tr>
           </tbody>
         </table>
       </div>
@@ -456,13 +459,13 @@ res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</s
       <div>
         <p class="kicker">Auth</p>
         <h2>HTTP Basic, from your AccessToken</h2>
-        <p class="section-lede" style="margin-bottom:0">OME compares <code>Authorization: Basic base64(AccessToken)</code> with the token in <code>Server.xml</code>. Use <code>CreateBasicAuthHeader(user, pass)</code> for a <code>user:password</code> token, or <code>CreateOmeBasicAuthHeaderWord(token)</code> for any other string.</p>
-        <p class="section-lede" style="margin:16px 0 0">Every reply carries <code>statusCode</code> and <code>message</code>. The SDK doesn't turn a 401 or 404 into an error yet, so read <code>StatusCode</code> on the result.</p>
-        <p class="note">Avoid <code>CreateOmeBasicAuthHeader*</code>: they set an <code>ome-access-token</code> header that OME ignores. Don't enable <code>debug</code> in production either, it logs the <code>Authorization</code> header.</p>
+        <p class="section-lede" style="margin-bottom:0">OME compares <code>Authorization: Basic base64(AccessToken)</code> with the token in <code>Server.xml</code>. <code>WithAccessToken(token)</code> sends it on every request; a <code>HeaderConfigurator</code> passed to <code>WithHeaders</code> works too.</p>
+        <p class="section-lede" style="margin:16px 0 0">A rejected token comes back as a 401, which the SDK returns as an <code>*APIError</code> carrying OME's status and message. <code>HealthCheck</code> calls <code>/v1/version</code>, so it catches a wrong token as well as a server that's down.</p>
+        <p class="note">Basic auth is only base64, not encryption: put the API port behind TLS (<code>:8082</code>) or a private network. <code>WithDebug</code> redacts the header, but still logs bodies.</p>
       </div>
       <div class="diagram reveal">
         <svg viewBox="0 0 460 300" role="img" aria-labelledby="auth-title">
-          <title id="auth-title">Sequence: the SDK sends a request with a Basic auth header; OME replies 200 with statusCode, message and response, or 401 with statusCode and message, which the SDK returns without an error.</title>
+          <title id="auth-title">Sequence: the SDK sends a request with a Basic auth header; OME replies 200 with statusCode, message and response, or 401 with statusCode and message, which the SDK returns as an APIError.</title>
           <defs>
             <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" class="head"/></marker>
             <marker id="ahb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" class="head back"/></marker>
@@ -487,7 +490,7 @@ res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</s
 
           <path class="arrow err" d="M368 240H94" marker-end="url(#ahe)"/>
           <text class="msg" x="230" y="232" text-anchor="middle">401 {statusCode, message}</text>
-          <text class="msg" x="230" y="262" text-anchor="middle">err == nil, check StatusCode</text>
+          <text class="msg" x="230" y="262" text-anchor="middle">*ovenmedia.APIError</text>
         </svg>
       </div>
     </div>
@@ -496,20 +499,20 @@ res, err := client.<span class="f">StartPush</span>(<span class="s">"default"</s
   <section id="status">
     <div class="wrap">
       <p class="kicker">Status</p>
-      <h2>Pre-1.0, and honest about it</h2>
-      <p class="section-lede">An audit against the current OME docs found six methods that don't work and no tests that would have caught them. Every finding has a stable id, a reproduction and a suggested fix in <a href="https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/blob/main/AUDIT.md">AUDIT.md</a>.</p>
+      <h2>v0.5: rebuilt against the OME docs</h2>
+      <p class="section-lede">An <a href="https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/blob/main/AUDIT.md">audit</a> of v0.4 found six methods that didn't work and no tests that would have caught them. v0.5 fixes them, and every endpoint now has a test against the replies documented by OME.</p>
       <div class="features">
         <div class="card reveal">
-          <h3>Next patch release</h3>
-          <p>Non-breaking fixes: the stats path and envelope, <code>GetRecordingState</code>, empty push lists, and a real test suite built on <code>httptest</code>.</p>
+          <h3>Breaking, once</h3>
+          <p>A <code>ctx</code> on every method, <code>*APIError</code> for HTTP errors, IDs instead of bodies for stop and state calls. <code>BuildOven</code> still works, deprecated.</p>
         </div>
         <div class="card reveal">
-          <h3>v0.5.0</h3>
-          <p>Breaking in one go: HTTP errors returned as a typed error, <code>context.Context</code> on every call, timeouts, a pluggable HTTP client and fixed vhost creation.</p>
+          <h3>New endpoints</h3>
+          <p>Version, virtual host and application CRUD, output profiles, stream pull and delete, and <code>:sendEvent</code>.</p>
         </div>
         <div class="card reveal">
-          <h3>After that</h3>
-          <p>The endpoints OME has and the SDK doesn't: application and stream CRUD, output profiles, <code>:sendEvent</code>, HLS dumps, scheduled channels.</p>
+          <h3>Not yet</h3>
+          <p>Scheduled channels, multiplex channels and HLS dumps. <a href="https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/issues">Open an issue</a> if you need one.</p>
         </div>
       </div>
     </div>
