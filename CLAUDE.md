@@ -11,7 +11,7 @@ fixed items stay listed with the commit that fixed them.
 
 ## Working rules (ALWAYS)
 
-- **Never `git push`** — the user pushes. Never a `Co-Authored-By` trailer or any tool footer
+- **Never `git push`** — the user pushes. Work on a branch: `main` only changes through a PR. Never a `Co-Authored-By` trailer or any tool footer
   in commits, PRs or docs. Commit identity for this repo is set in the local git config
   (`Allan Nava`, the gmail address); don't override it.
 - **Never tag** without being asked — a tag is a release on the Go proxy and can't be taken back.
@@ -42,12 +42,17 @@ CI (`.github/workflows/`): `go-build.yml` (tidy check, build, vet on 1.25.x and 
 (fills the README contributors block). The file names are what the README badges point at —
 rename one and update the badge.
 
-`main` is protected: `build (go 1.25.x)`, `build (go stable)`, `test (go 1.25.x)`,
-`test (go stable)` and `lint` must pass before a merge, and force pushes and deletion are
-blocked. No review is required, and admins can bypass, so the owner still pushes directly.
-Renaming a job, or changing a matrix entry, changes its check name: update the protection rule
-too, or merges wait forever on a check that no longer runs. Because the token can't push to a
-protected branch, the contributors action opens a PR instead of committing. Renovate keeps modules and actions current and leaves the `go`
+`main` is protected and **nobody pushes to it directly, admins included**: every change goes
+through a pull request, which merges only when `build (go 1.25.x)`, `build (go stable)`,
+`test (go 1.25.x)`, `test (go stable)` and `lint` are green and its conversations are resolved.
+No approval is required (a sole maintainer can't approve their own PR). Force pushes and
+deletion are blocked. Renaming a job, or changing a matrix entry, changes its check name: update
+the protection rule in the same PR, or merges wait forever on a check that no longer runs. The
+contributors action opens its own PR for the same reason.
+
+Workflow: commit on a branch (`fix/...`, `docs/...`), the user pushes it and opens the PR
+(`gh pr create --fill`), merges when CI is green, then tags from the updated `main`. Tags aren't
+covered by the rule. Renovate keeps modules and actions current and leaves the `go`
 directive alone; raising the floor means updating the first entry of both CI matrices.
 
 ## Layout
