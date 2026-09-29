@@ -1,47 +1,39 @@
 package ovenmedia
 
 import (
-	"encoding/json"
-	"gopkg.in/validator.v2"
+	"context"
+	"net/http"
 )
 
-// POST http://1.2.3.4:8081/v1/vhosts
-
-func (o *ovenMedia) CreateVirtualHost(name string) (*ResponseVirtualHost, error) {
-	body := &RequestCreateVirtualHost{
-		VirtualHostsName: []VRHostResponse{
-			{
-				Name: name,
-			},
-		},
+// CreateVirtualHost calls POST /v1/vhosts. OME takes and returns an array,
+// one entry per virtual host.
+func (o *ovenMedia) CreateVirtualHost(ctx context.Context, vhosts ...VirtualHostConfig) ([]ResponseVirtualHost, error) {
+	if len(vhosts) == 0 {
+		return nil, invalid("vhost: at least one virtual host is required")
 	}
-	if errs := validator.Validate(body); errs != nil {
-		// values not valid, deal with errors here
-		return nil, errs
+	for _, v := range vhosts {
+		if v.Name == "" {
+			return nil, invalid("vhost: name is required")
+		}
 	}
-	resp, err := o.post(V1_HOSTS, body)
+	res, err := do[[]ResponseVirtualHost](ctx, o, http.MethodPost, pathVhosts, vhosts)
 	if err != nil {
 		return nil, err
 	}
-	//
-	var obj ResponseVirtualHost
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	return &obj, nil
+	return *res, nil
 }
 
-// GET http://1.2.3.4:8081/v1/vhosts
-func (o *ovenMedia) GetAllVirtualHosts() (*ResponseVirtualList, error) {
-	//
-	resp, err := o.get(V1_HOSTS, nil)
-	if err != nil {
-		return nil, err
-	}
-	var obj ResponseVirtualList
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+// GetAllVirtualHosts calls GET /v1/vhosts.
+func (o *ovenMedia) GetAllVirtualHosts(ctx context.Context) (*ResponseNameList, error) {
+	return do[ResponseNameList](ctx, o, http.MethodGet, pathVhosts, nil)
+}
+
+// GetVirtualHost calls GET /v1/vhosts/{vhost}.
+func (o *ovenMedia) GetVirtualHost(ctx context.Context, vhost string) (*ResponseVirtualHost, error) {
+	return do[ResponseVirtualHost](ctx, o, http.MethodGet, pathVhost(vhost), nil)
+}
+
+// DeleteVirtualHost calls DELETE /v1/vhosts/{vhost}.
+func (o *ovenMedia) DeleteVirtualHost(ctx context.Context, vhost string) (*BaseResponseOK, error) {
+	return do[BaseResponseOK](ctx, o, http.MethodDelete, pathVhost(vhost), nil)
 }

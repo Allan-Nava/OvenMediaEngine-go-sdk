@@ -2,6 +2,8 @@ package ovenmedia
 
 import "encoding/base64"
 
+// HeaderConfigurator holds headers sent with every request; pass it to
+// [WithHeaders].
 type HeaderConfigurator struct {
 	Headers map[string]string
 }
@@ -73,26 +75,35 @@ func (h *HeaderConfigurator) GetHeaderKeyValuePairs() map[string]string {
 	return h.Headers
 }
 
-// Authorization Stuff
+// CreateBasicAuthHeader sets Authorization: Basic base64(username:password),
+// for an OME AccessToken of the form "username:password".
 func (h *HeaderConfigurator) CreateBasicAuthHeader(username string, password string) {
 	h.Headers["Authorization"] = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
 }
 
+// CreateBasicAuthHeaderEncoded sets Authorization: Basic <base64EncodedToken>.
 func (h *HeaderConfigurator) CreateBasicAuthHeaderEncoded(base64EncodedToken string) {
 	h.Headers["Authorization"] = "Basic " + base64EncodedToken
 }
 
-
+// CreateOmeBasicAuthHeaderWord sets Authorization: Basic base64(word), for an
+// AccessToken of any form.
 func (h *HeaderConfigurator) CreateOmeBasicAuthHeaderWord(word string) {
 	h.Headers["Authorization"] = "Basic " + base64.StdEncoding.EncodeToString([]byte(word))
 }
 
-func (h *HeaderConfigurator) CreateOmeBasicAuthHeader(username string, password string) {
-	h.Headers["ome-access-token"] = "Basic " + base64.StdEncoding.EncodeToString([]byte(username+":"+password))
-}
-
-func (h *HeaderConfigurator) CreateOmeBasicAuthHeaderEncoded(base64EncodedToken string) {
-	h.Headers["ome-access-token"] = "Basic " + base64EncodedToken
-}
-
+// CreateOmeBasicAuthHeader used to set an "ome-access-token" header, which
+// OME doesn't read. It now sets Authorization, like CreateBasicAuthHeader.
 //
+// Deprecated: use [CreateBasicAuthHeader] or [WithAccessToken].
+func (h *HeaderConfigurator) CreateOmeBasicAuthHeader(username string, password string) {
+	h.CreateBasicAuthHeader(username, password)
+}
+
+// CreateOmeBasicAuthHeaderEncoded used to set an "ome-access-token" header,
+// which OME doesn't read. It now sets Authorization.
+//
+// Deprecated: use [CreateBasicAuthHeaderEncoded].
+func (h *HeaderConfigurator) CreateOmeBasicAuthHeaderEncoded(base64EncodedToken string) {
+	h.CreateBasicAuthHeaderEncoded(base64EncodedToken)
+}

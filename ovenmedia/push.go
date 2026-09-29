@@ -1,61 +1,35 @@
 package ovenmedia
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/go-resty/resty/v2"
-	"gopkg.in/validator.v2"
+	"context"
+	"net/http"
 )
 
-// POST http://1.2.3.4:8081/v1/vhosts/default/apps/app:startPush
-// This is an action to request a push of a selected stream. Please refer to the "Push" document for detail setting.
-func (o *ovenMedia) StartPush(vHost string, appName string, body RequestBodyPush) (*ResponseStartPush, error) {
-	//
-	if errs := validator.Validate(body); errs != nil {
-		// values not valid, deal with errors here
-		return nil, errs
-	}
-	//
-	resp, err := o.post(GET_VHOSTS_PUSH_BY_NAME(vHost, appName), body)
-	if err != nil {
+// StartPush calls POST .../apps/{app}:startPush.
+func (o *ovenMedia) StartPush(ctx context.Context, vhost, app string, body RequestBodyPush) (*ResponseStartPush, error) {
+	if err := body.validate(); err != nil {
 		return nil, err
 	}
-	var obj ResponseStartPush
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	return &obj, nil
+	return do[ResponseStartPush](ctx, o, http.MethodPost, pathAppAction(vhost, app, "startPush"), body)
 }
 
-// Request to stop pushing
-func (o *ovenMedia) StopPush(vHost string, appName string, body RequestBodyPush) (*resty.Response, error) {
-	//
-	if errs := validator.Validate(body); errs != nil {
-		// values not valid, deal with errors here
-		return nil, errs
+// StopPush calls POST .../apps/{app}:stopPush for the push with this ID.
+func (o *ovenMedia) StopPush(ctx context.Context, vhost, app, id string) (*BaseResponseOK, error) {
+	if id == "" {
+		return nil, invalid("push: id is required")
 	}
-	resp, err := o.post(GET_VHOSTS_STOP_BY_NAME(vHost, appName), body)
-	if err != nil {
-		return nil, err
-	}
-	// TODO:
-	fmt.Println("resp", resp)
-	return resp, nil
+	return do[BaseResponseOK](ctx, o, http.MethodPost, pathAppAction(vhost, app, "stopPush"), RequestRecordingStop{ID: id})
 }
 
-// Get all push lists for a specific application
-func (o *ovenMedia) GetAllPushes(vHost string, appName string) (*ResponsePushes, error) {
-	//
-	resp, err := o.post(GET_VHOSTS_PUSHES_BY_NAME(vHost, appName), nil)
+// GetAllPushes calls POST .../apps/{app}:pushes. With no pushes the result
+// has an empty, non-nil Response.
+func (o *ovenMedia) GetAllPushes(ctx context.Context, vhost, app string) (*ResponsePushes, error) {
+	res, err := do[ResponsePushes](ctx, o, http.MethodPost, pathAppAction(vhost, app, "pushes"), nil)
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode() == 204 {
-		return nil, nil
+	if res.Response == nil {
+		res.Response = []ResponsePush{}
 	}
-	var obj ResponsePushes
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	return &obj, nil
+	return res, nil
 }

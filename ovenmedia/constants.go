@@ -1,86 +1,51 @@
 package ovenmedia
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
 
+// API paths, relative to the base URL. Names are escaped so that a stream
+// called "a/b" can't reach another resource.
 const (
-	//virtual hosts
-	V1_HOSTS      = "/v1/vhosts"
-	V1_HOSTS_NAME = "/v1/vhosts/%s"
-	// PUSH
-	// /v1/vhosts/{vhost_name}/apps/{app_name}:startPush
-	V1_HOSTS_START_PUSH_NAME = "/v1/vhosts/%s/apps/%s:startPush"
-	//
-	V1_HOSTS_STOP_PUSH_NAME = "/v1/vhosts/%s/apps/%s:stopPush"
-	//http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:pushes
-	V1_HOSTS_PUSHES_NAME = "/v1/vhosts/%s/apps/%s:pushes"
-	//
-	// RECORDING
-	// http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:startRecord
-	V1_HOSTS_START_RECORD_NAME = "/v1/vhosts/%s/apps/%s:startRecord"
-	//http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:stopRecord
-	V1_HOSTS_STOP_RECORD_NAME = "/v1/vhosts/%s/apps/%s:stopRecord"
-	// http://<OME_HOST>:<API_PORT>/v1/vhosts/{vhost_name}/apps/{app_name}:records
-	V1_HOSTS_RECORDS_NAME = "/v1/vhosts/%s/apps/%s:records"
-	//
-	// STATS
-	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}
-	V1_CURRENT_STATS_NAME = "/v1/stats/current/vhosts/%s"
-	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}/apps/{app_name}
-	V1_CURRENT_STATS_APPP_NAME = "/v1/stats/current/vhosts/%s/apps/%s"
-	// http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}/apps/{app_name}/stream/{stream}
-	V1_CURRENT_STATS_APPP_STREAMS_NAME = "/v1/stats/current/vhosts/%s/apps/%s/stream/%s"
-	//
+	pathVersion = "/v1/version"
+	pathVhosts  = "/v1/vhosts"
 )
 
-var (
-	//
-	GET_VHOSTS_BY_NAME = func(vhostName string) string {
-		return fmt.Sprintf(V1_HOSTS_NAME, vhostName)
-	}
-	// Get all vhost start push by name
-	GET_VHOSTS_PUSH_BY_NAME = func(vhostName string, appName string) string {
-		return fmt.Sprintf(V1_HOSTS_START_PUSH_NAME, vhostName, appName)
-	}
-	// Get all vhost stop by name
-	GET_VHOSTS_STOP_BY_NAME = func(vhostName string, appName string) string {
-		//
-		return fmt.Sprintf(V1_HOSTS_STOP_PUSH_NAME, vhostName, appName)
-	}
-	//
-	GET_VHOSTS_PUSHES_BY_NAME = func(vhostName string, appName string) string {
-		return fmt.Sprintf(V1_HOSTS_PUSHES_NAME, vhostName, appName)
-	}
-	//
-	GET_VHOSTS_START_RECORDED_BY_NAME = func(vhostName string, appName string) string {
-		return fmt.Sprintf(V1_HOSTS_START_RECORD_NAME, vhostName, appName)
-	}
-	//
-	GET_VHOSTS_STOP_RECORDED_BY_NAME = func(vhostName string, appName string) string {
-		return fmt.Sprintf(V1_HOSTS_STOP_RECORD_NAME, vhostName, appName)
-	}
-	//
-	GET_VHOSTS_RECORDS_BY_NAME = func(vhostName string, appName string) string {
-		return fmt.Sprintf(V1_HOSTS_RECORDS_NAME, vhostName, appName)
-	}
-	//
-	GET_CURRENT_STATS_NAME = func(vhostName string) string {
-		return fmt.Sprintf(V1_CURRENT_STATS_NAME, vhostName)
-	}
-	//
-	GET_CURRENT_STATS_APP_NAME = func(vhostName string, appName string) string {
-		return fmt.Sprintf(V1_CURRENT_STATS_APPP_NAME, vhostName, appName)
-	}
-	//
-	GET_CURRENT_STATS_STREAM = func(vhostName string, appName string, stream string) string {
-		return fmt.Sprintf(V1_CURRENT_STATS_APPP_STREAMS_NAME, vhostName, appName, stream)
-	}
-	//
-	GET_THUMBNAIL = func(appName string, streamKey string) string {
-		return fmt.Sprintf("/%s/%s/thumb.png", appName, streamKey)
-	}
-	//
-)
+func esc(s string) string { return url.PathEscape(s) }
 
+func pathVhost(vhost string) string { return pathVhosts + "/" + esc(vhost) }
+
+func pathApps(vhost string) string { return pathVhost(vhost) + "/apps" }
+
+func pathApp(vhost, app string) string { return pathApps(vhost) + "/" + esc(app) }
+
+// pathAppAction builds the ":verb" endpoints, e.g. apps/app:startPush.
+func pathAppAction(vhost, app, action string) string { return pathApp(vhost, app) + ":" + action }
+
+func pathOutputProfiles(vhost, app string) string { return pathApp(vhost, app) + "/outputProfiles" }
+
+func pathOutputProfile(vhost, app, profile string) string {
+	return pathOutputProfiles(vhost, app) + "/" + esc(profile)
+}
+
+func pathStreams(vhost, app string) string { return pathApp(vhost, app) + "/streams" }
+
+func pathStream(vhost, app, stream string) string { return pathStreams(vhost, app) + "/" + esc(stream) }
+
+func pathStats(vhost string) string { return "/v1/stats/current/vhosts/" + esc(vhost) }
+
+func pathStatsApp(vhost, app string) string { return pathStats(vhost) + "/apps/" + esc(app) }
+
+func pathStatsStream(vhost, app, stream string) string {
+	return pathStatsApp(vhost, app) + "/streams/" + esc(stream)
+}
+
+func pathThumbnail(app, stream string, format ThumbnailFormat) string {
+	return fmt.Sprintf("/%s/%s/thumb.%s", esc(app), esc(stream), format)
+}
+
+// ApplicationType is an application's "type".
 type ApplicationType string
 
 const (
@@ -88,14 +53,21 @@ const (
 	VOD  ApplicationType = "vod"
 )
 
+// CodecVideo names a video codec in an output profile.
 type CodecVideo string
 
 const (
 	H264 CodecVideo = "h264"
 	H265 CodecVideo = "h265"
 	VP8  CodecVideo = "vp8"
-	OPUS CodecVideo = "opus"
-	AAC  CodecVideo = "aac"
+)
+
+// CodecAudio names an audio codec in an output profile.
+type CodecAudio string
+
+const (
+	OPUS CodecAudio = "opus"
+	AAC  CodecAudio = "aac"
 )
 
 type MediaType string
@@ -120,4 +92,12 @@ type AudioLayout string
 const (
 	STEREO AudioLayout = "stereo"
 	MONO   AudioLayout = "mono"
+)
+
+// ThumbnailFormat is the image type of [IOvenMediaClient.GetThumbnail].
+type ThumbnailFormat string
+
+const (
+	ThumbnailPNG ThumbnailFormat = "png"
+	ThumbnailJPG ThumbnailFormat = "jpg"
 )

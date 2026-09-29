@@ -1,60 +1,22 @@
 package ovenmedia
 
-import "encoding/json"
+import (
+	"context"
+	"net/http"
+)
 
-/*
-http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}
-*/
-
-func (o *ovenMedia) GetStatsVhosts(vHost string) (*ResponseStats, error) {
-	//
-	resp, err := o.get(GET_CURRENT_STATS_NAME(vHost), nil)
-	if err != nil {
-		return nil, err
-	}
-	//
-	var obj ResponseStats
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+// GetStatsVhosts calls GET /v1/stats/current/vhosts/{vhost}.
+func (o *ovenMedia) GetStatsVhosts(ctx context.Context, vhost string) (*ResponseStats, error) {
+	return do[ResponseStats](ctx, o, http.MethodGet, pathStats(vhost), nil)
 }
 
-/*
-http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}/apps/{app_name}
-*/
-
-func (o *ovenMedia) GetStatsAppVhosts(vHost string, appName string) (*ResponseStats, error) {
-	//
-	resp, err := o.get(GET_CURRENT_STATS_APP_NAME(vHost, appName), nil)
-	if err != nil {
-		return nil, err
-	}
-	//
-	var obj ResponseStats
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+// GetStatsAppVhosts calls GET /v1/stats/current/vhosts/{vhost}/apps/{app}.
+func (o *ovenMedia) GetStatsAppVhosts(ctx context.Context, vhost, app string) (*ResponseStats, error) {
+	return do[ResponseStats](ctx, o, http.MethodGet, pathStatsApp(vhost, app), nil)
 }
 
-/*
-http://<OME_HOST>:<API_PORT>/v1/stats/current/vhosts/{vhost_name}/apps/{app_name}/streams/{stream}
-*/
-
-func (o *ovenMedia) GetStatsStreamVhosts(vHost string, appName string, stream string) (*ResponseStats, error) {
-	//
-	resp, err := o.get(GET_CURRENT_STATS_STREAM(vHost, appName, stream), nil)
-	if err != nil {
-		return nil, err
-	}
-	//
-	var obj ResponseStats
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+// GetStatsStreamVhosts calls
+// GET /v1/stats/current/vhosts/{vhost}/apps/{app}/streams/{stream}.
+func (o *ovenMedia) GetStatsStreamVhosts(ctx context.Context, vhost, app, stream string) (*ResponseStats, error) {
+	return do[ResponseStats](ctx, o, http.MethodGet, pathStatsStream(vhost, app, stream), nil)
 }

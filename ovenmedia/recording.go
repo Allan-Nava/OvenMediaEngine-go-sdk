@@ -1,68 +1,37 @@
 package ovenmedia
 
-import "encoding/json"
+import (
+	"context"
+	"net/http"
+)
 
-//
-
-func (o *ovenMedia) StartRecording(vHost string, appName string, body RequestRecordingStart) (*ResponseRecordingStart, error) {
-	//
-	resp, err := o.post(GET_VHOSTS_START_RECORDED_BY_NAME(vHost, appName), body)
-	if err != nil {
+// StartRecording calls POST .../apps/{app}:startRecord.
+func (o *ovenMedia) StartRecording(ctx context.Context, vhost, app string, body RequestRecordingStart) (*ResponseRecordingStart, error) {
+	if err := body.validate(); err != nil {
 		return nil, err
 	}
-	//
-	var obj ResponseRecordingStart
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+	return do[ResponseRecordingStart](ctx, o, http.MethodPost, pathAppAction(vhost, app, "startRecord"), body)
 }
 
-//
-
-func (o *ovenMedia) StopRecording(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error) {
-	resp, err := o.post(GET_VHOSTS_STOP_RECORDED_BY_NAME(vHost, appName), body)
-	if err != nil {
-		return nil, err
+// StopRecording calls POST .../apps/{app}:stopRecord for the recording with
+// this ID.
+func (o *ovenMedia) StopRecording(ctx context.Context, vhost, app, id string) (*ResponseRecordingStart, error) {
+	if id == "" {
+		return nil, invalid("recording: id is required")
 	}
-	//
-	var obj ResponseRecordingStart
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+	return do[ResponseRecordingStart](ctx, o, http.MethodPost, pathAppAction(vhost, app, "stopRecord"), RequestRecordingStop{ID: id})
 }
 
-//
-
-func (o *ovenMedia) ListRecordingState(vHost string, appName string) (*ResponseRecordingStateList, error) {
-	//
-	resp, err := o.postNoBody(GET_VHOSTS_RECORDS_BY_NAME(vHost, appName))
-	if err != nil {
-		return nil, err
-	}
-	//
-	var obj ResponseRecordingStateList
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+// ListRecordingState calls POST .../apps/{app}:records for every recording.
+func (o *ovenMedia) ListRecordingState(ctx context.Context, vhost, app string) (*ResponseRecordingStateList, error) {
+	return do[ResponseRecordingStateList](ctx, o, http.MethodPost, pathAppAction(vhost, app, "records"), nil)
 }
 
-func (o *ovenMedia) GetRecordingState(vHost string, appName string, body RequestRecordingStop) (*ResponseRecordingStart, error) {
-	//
-	resp, err := o.post(GET_VHOSTS_RECORDS_BY_NAME(vHost, appName), body)
-	if err != nil {
-		return nil, err
+// GetRecordingState calls POST .../apps/{app}:records filtered by ID. OME
+// still replies with a list, of at most one recording.
+func (o *ovenMedia) GetRecordingState(ctx context.Context, vhost, app, id string) (*ResponseRecordingStateList, error) {
+	if id == "" {
+		return nil, invalid("recording: id is required")
 	}
-	//
-	var obj ResponseRecordingStart
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
-	}
-	//
-	return &obj, nil
+	return do[ResponseRecordingStateList](ctx, o, http.MethodPost, pathAppAction(vhost, app, "records"), RequestRecordingStop{ID: id})
 }

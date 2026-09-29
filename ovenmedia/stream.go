@@ -1,36 +1,45 @@
 package ovenmedia
 
 import (
-	"encoding/json"
-	"fmt"
+	"context"
+	"net/http"
 )
 
-// POST http://1.2.3.4:8081/v1/vhosts
-
-func (o *ovenMedia) GetStreams(host string, application string) (*ResponseVirtualList, error) {
-	url := fmt.Sprintf("%s/%s/apps/%s/streams", V1_HOSTS, host, application)
-	resp, err := o.get(url, nil)
-	if err != nil {
-		return nil, err
+// CreateStream calls POST .../apps/{app}/streams to pull a stream from the
+// given URLs.
+func (o *ovenMedia) CreateStream(ctx context.Context, vhost, app string, body RequestCreateStream) (*BaseResponseOK, error) {
+	if body.Name == "" {
+		return nil, invalid("stream: name is required")
 	}
-
-	var obj ResponseVirtualList
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
+	if len(body.URLs) == 0 {
+		return nil, invalid("stream: at least one url is required")
 	}
-	return &obj, nil
+	return do[BaseResponseOK](ctx, o, http.MethodPost, pathStreams(vhost, app), body)
 }
 
-func (o *ovenMedia) GetStreamInfo(host string, application string, stream string) (*ResponseStreamInfo, error) {
-	url := fmt.Sprintf("%s/%s/apps/%s/streams/%s", V1_HOSTS, host, application, stream)
-	resp, err := o.get(url, nil)
-	if err != nil {
-		return nil, err
-	}
+// GetStreams calls GET .../apps/{app}/streams.
+func (o *ovenMedia) GetStreams(ctx context.Context, vhost, app string) (*ResponseNameList, error) {
+	return do[ResponseNameList](ctx, o, http.MethodGet, pathStreams(vhost, app), nil)
+}
 
-	var obj ResponseStreamInfo
-	if err := json.Unmarshal(resp.Body(), &obj); err != nil {
-		return nil, err
+// GetStreamInfo calls GET .../apps/{app}/streams/{stream}.
+func (o *ovenMedia) GetStreamInfo(ctx context.Context, vhost, app, stream string) (*ResponseStreamInfo, error) {
+	return do[ResponseStreamInfo](ctx, o, http.MethodGet, pathStream(vhost, app, stream), nil)
+}
+
+// DeleteStream calls DELETE .../apps/{app}/streams/{stream}.
+func (o *ovenMedia) DeleteStream(ctx context.Context, vhost, app, stream string) (*BaseResponseOK, error) {
+	return do[BaseResponseOK](ctx, o, http.MethodDelete, pathStream(vhost, app, stream), nil)
+}
+
+// SendEvent calls POST .../streams/{stream}:sendEvent to insert ID3v2
+// metadata. OME answers 409 if the stream hasn't started yet.
+func (o *ovenMedia) SendEvent(ctx context.Context, vhost, app, stream string, body RequestSendEvent) (*BaseResponseOK, error) {
+	if body.EventFormat == "" {
+		body.EventFormat = "id3v2"
 	}
-	return &obj, nil
+	if len(body.Events) == 0 {
+		return nil, invalid("event: at least one event is required")
+	}
+	return do[BaseResponseOK](ctx, o, http.MethodPost, pathStream(vhost, app, stream)+":sendEvent", body)
 }

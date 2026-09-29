@@ -1,195 +1,166 @@
 package ovenmedia
 
-import "time"
+import "encoding/json"
 
+// BaseResponseOK is the envelope of every OME reply.
 type BaseResponseOK struct {
 	Message    string `json:"message"`
 	StatusCode int    `json:"statusCode"`
 }
 
-// Response<VirtualHost>
-type ResponseVirtualHost struct {
-	VRHosts []VirtualHost
-}
-
-type VirtualHost struct {
-	BaseResponseOK
-	Response VRHostResponse `json:"response"`
-}
-
-type VRHostResponse struct {
-	Name string `json:"name"`
-}
-
-type ResponseVirtualList struct {
+// ResponseNameList is a list of names: virtual hosts, applications, streams
+// or output profiles.
+type ResponseNameList struct {
 	BaseResponseOK
 	Response []string `json:"response"`
 }
 
-type ResponsePushes struct {
+// ResponseVirtualList is the pre-0.5 name of [ResponseNameList].
+//
+// Deprecated: use ResponseNameList.
+type ResponseVirtualList = ResponseNameList
+
+type ResponseVersion struct {
 	BaseResponseOK
-	Response []struct {
-		App         string    `json:"app"`
-		CreatedTime time.Time `json:"createdTime"`
-		FinishTime  time.Time `json:"finishTime"`
-		Id          string    `json:"id"`
-		Protocol    string    `json:"protocol"`
-		SentBytes   int       `json:"sentBytes"`
-		SentTime    int       `json:"sentTime"`
-		Sequence    int       `json:"sequence"`
-		StartTime   time.Time `json:"startTime"`
-		State       string    `json:"state"`
-		Stream      struct {
-			Name   string `json:"name"`
-			Tracks []int  `json:"tracks"`
-		} `json:"stream"`
-		StreamKey      string `json:"streamKey"`
-		TotalsentBytes int    `json:"totalsentBytes"`
-		TotalsentTime  int    `json:"totalsentTime"`
-		Url            string `json:"url"`
-		Vhost          string `json:"vhost"`
+	Response struct {
+		Version    string `json:"version"`
+		GitVersion string `json:"gitVersion"`
 	} `json:"response"`
+}
+
+type ResponseVirtualHost struct {
+	BaseResponseOK
+	Response VirtualHostConfig `json:"response"`
+}
+
+type ResponseApplication struct {
+	BaseResponseOK
+	Response ApplicationConfig `json:"response"`
+}
+
+type ResponseOutputProfile struct {
+	BaseResponseOK
+	Response OutputProfile `json:"response"`
 }
 
 type ResponseStreamInfo struct {
 	BaseResponseOK
-	Response struct {
-		Input struct {
-			CreatedTime time.Time `json:"createdTime"`
-			SourceType  string    `json:"sourceType"`
-			SourceUrl   string    `json:"sourceUrl"`
-			Tracks      []Track   `json:"tracks"`
-		} `json:"input"`
-		Name    string `json:"name"`
-		Outputs []struct {
-			Name   string `json:"name"`
-			Tracks []struct {
-				Id    int    `json:"id"`
-				Name  string `json:"name"`
-				Type  string `json:"type"`
-				Video struct {
-					Bypass    bool    `json:"bypass"`
-					Bitrate   string  `json:"bitrate,omitempty"`
-					Codec     string  `json:"codec,omitempty"`
-					Framerate float64 `json:"framerate,omitempty"`
-					Height    int     `json:"height,omitempty"`
-					Width     int     `json:"width,omitempty"`
-				} `json:"video,omitempty"`
-				Audio struct {
-					Bypass     bool   `json:"bypass"`
-					Bitrate    string `json:"bitrate,omitempty"`
-					Channel    int    `json:"channel,omitempty"`
-					Codec      string `json:"codec,omitempty"`
-					Samplerate int    `json:"samplerate,omitempty"`
-				} `json:"audio,omitempty"`
-			} `json:"tracks"`
-		} `json:"outputs"`
-	} `json:"response"`
+	Response StreamInfo `json:"response"`
+}
+
+type StreamInfo struct {
+	Name    string         `json:"name"`
+	Input   StreamInput    `json:"input"`
+	Outputs []StreamOutput `json:"outputs"`
+}
+
+type StreamInput struct {
+	CreatedTime Time              `json:"createdTime"`
+	SourceType  string            `json:"sourceType"`
+	SourceURL   string            `json:"sourceUrl"`
+	Connection  *StreamConnection `json:"connection,omitempty"`
+	Tracks      []Track           `json:"tracks"`
+}
+
+type StreamConnection struct {
+	Transport     string `json:"transport"`
+	Protocol      string `json:"protocol"`
+	LocalAddress  string `json:"localAddress"`
+	LocalPort     int    `json:"localPort"`
+	RemoteAddress string `json:"remoteAddress"`
+	RemotePort    int    `json:"remotePort"`
+}
+
+type StreamOutput struct {
+	Name      string          `json:"name"`
+	Tracks    []Track         `json:"tracks"`
+	Playlists json.RawMessage `json:"playlists,omitempty"`
 }
 
 type Track struct {
-	Id    int    `json:"id"`
+	ID    int    `json:"id"`
 	Name  string `json:"name"`
 	Type  string `json:"type"`
-	Video Video  `json:"video,omitempty"`
-	Audio Audio  `json:"audio,omitempty"`
+	Video *Video `json:"video,omitempty"`
+	Audio *Audio `json:"audio,omitempty"`
 }
 
 type Audio struct {
-	Bitrate    string `json:"bitrate"`
-	Bypass     bool   `json:"bypass"`
-	Channel    int    `json:"channel"`
-	Codec      string `json:"codec"`
-	Samplerate int    `json:"samplerate"`
+	Bypass     bool      `json:"bypass"`
+	Codec      string    `json:"codec"`
+	Bitrate    FlexInt64 `json:"bitrate"`
+	Samplerate int       `json:"samplerate"`
+	Channel    int       `json:"channel"`
 }
 
 type Video struct {
-	Bitrate   string  `json:"bitrate"`
-	Bypass    bool    `json:"bypass"`
-	Codec     string  `json:"codec"`
-	Framerate float64 `json:"framerate"`
-	Height    int     `json:"height"`
-	Width     int     `json:"width"`
+	Bypass           bool      `json:"bypass"`
+	Codec            string    `json:"codec"`
+	Width            int       `json:"width"`
+	Height           int       `json:"height"`
+	Bitrate          FlexInt64 `json:"bitrate"`
+	Framerate        float64   `json:"framerate"`
+	KeyFrameInterval float64   `json:"keyFrameInterval"`
 }
 
-// PUSH Stuff
+// ResponsePush is one push, as returned by :startPush and :pushes.
+type ResponsePush struct {
+	ID             string       `json:"id"`
+	State          string       `json:"state"`
+	Vhost          string       `json:"vhost"`
+	App            string       `json:"app"`
+	Stream         SimpleStream `json:"stream"`
+	Protocol       string       `json:"protocol"`
+	URL            string       `json:"url"`
+	StreamKey      string       `json:"streamKey"`
+	SentBytes      int64        `json:"sentBytes"`
+	SentTime       int64        `json:"sentTime"`
+	Sequence       int          `json:"sequence"`
+	TotalSentBytes int64        `json:"totalsentBytes"`
+	TotalSentTime  int64        `json:"totalsentTime"`
+	CreatedTime    Time         `json:"createdTime"`
+	StartTime      Time         `json:"startTime"`
+	FinishTime     Time         `json:"finishTime"`
+}
+
 type ResponseStartPush struct {
 	BaseResponseOK
 	Response ResponsePush `json:"response"`
 }
 
-type ResponsePush struct {
-	App         string `json:"app"`
-	CreatedTime string `json:"createdTime"`
-	ID          string `json:"id"`
-	Protocol    string `json:"protocol"`
-	SentBytes   int    `json:"sentBytes"`
-	SentTime    int    `json:"sentTime"`
-	Sequence    int    `json:"sequence"`
-	StartTime   string `json:"startTime"`
-	State       string `json:"state"`
-	Stream      struct {
-		Name   string `json:"name"`
-		Tracks []int  `json:"tracks"`
-	} `json:"stream"`
-	StreamKey      string `json:"streamKey"`
-	TotalSentBytes int    `json:"totalsentBytes"`
-	TotalSentTime  int    `json:"totalsentTime"`
-	URL            string `json:"url"`
-	Vhost          string `json:"vhost"`
+type ResponsePushes struct {
+	BaseResponseOK
+	Response []ResponsePush `json:"response"`
 }
 
-/*
-	{
-		"createdTime": "2021-01-11T02:52:22.013+09:00",
-		"lastRecvTime": "2021-01-11T04:11:41.734+09:00",
-		"lastSentTime": "2021-01-11T02:52:22.013+09:00",
-		"lastUpdatedTime": "2021-01-11T04:11:41.734+09:00",
-		"maxTotalConnectionTime": "2021-01-11T02:52:22.013+09:00",
-		"maxTotalConnections": 0,
-		"totalBytesIn": 494713880,
-		"totalBytesOut": 0,
-		"totalConnections": 0
-	}
-*/
+// ResponseStats wraps the current statistics of a virtual host,
+// application or stream.
 type ResponseStats struct {
-	CreatedTime            string `json:"createdTime"`
-	LastRecvTime           string `json:"lastRecvTime"`
-	LastSentTime           string `json:"lastSentTime"`
-	LastUpdatedTime        string `json:"lastUpdatedTime"`
-	MaxTotalConnectionTime string `json:"maxTotalConnectionTime"`
-	MaxTotalConnections    int    `json:"maxTotalConnections"`
-	TotalBytesIn           int    `json:"totalBytesIn"`
-	TotalBytesOut          int    `json:"totalBytesOut"`
-	TotalConnections       int    `json:"totalConnections"`
+	BaseResponseOK
+	Response Stats `json:"response"`
 }
 
-// Recording Stuff
+type Stats struct {
+	// Connections counts viewers per publisher: "webrtc", "llhls", "srt"...
+	Connections            map[string]int `json:"connections"`
+	CreatedTime            Time           `json:"createdTime"`
+	LastRecvTime           Time           `json:"lastRecvTime"`
+	LastSentTime           Time           `json:"lastSentTime"`
+	LastUpdatedTime        Time           `json:"lastUpdatedTime"`
+	MaxTotalConnectionTime Time           `json:"maxTotalConnectionTime"`
+	MaxTotalConnections    int            `json:"maxTotalConnections"`
+	TotalConnections       int            `json:"totalConnections"`
+	TotalBytesIn           int64          `json:"totalBytesIn"`
+	TotalBytesOut          int64          `json:"totalBytesOut"`
+	LastThroughputIn       int64          `json:"lastThroughputIn"`
+	LastThroughputOut      int64          `json:"lastThroughputOut"`
+	AvgThroughputIn        int64          `json:"avgThroughputIn"`
+	AvgThroughputOut       int64          `json:"avgThroughputOut"`
+	MaxThroughputIn        int64          `json:"maxThroughputIn"`
+	MaxThroughputOut       int64          `json:"maxThroughputOut"`
+}
 
-/*
-	{
-	    "message": "OK",
-	    "response": [
-	        {
-	            "state": "ready",
-	            "id": "stream_o",
-	            "vhost": "default",
-	            "app": "app",
-	            "stream": {
-	                "name": "stream_o",
-	                "tracks": []
-	            },
-	            "filePath": "/path/to/save/recorded/file_${Sequence}.ts",
-	            "infoPath": "/path/to/save/information/file.xml",
-	            "interval": 60000,
-	            "schedule": "0 0 *1",
-	            "segmentationRule": "continuity",
-	            "createdTime": "2021-08-31T23:44:44.789+0900"
-	        }
-	    ],
-	    "statusCode": 200
-	}
-*/
+// ResponseRecordingStart is the reply of :startRecord and :stopRecord.
 type ResponseRecordingStart struct {
 	BaseResponseOK
 	Response ResponseRecording `json:"response"`
@@ -201,18 +172,15 @@ type ResponseRecordingStateList struct {
 }
 
 type ResponseRecording struct {
-	State  string `json:"state"`
-	ID     string `json:"id"`
-	Vhost  string `json:"vhost"`
-	App    string `json:"app"`
-	Stream struct {
-		Name   string `json:"name"`
-		Tracks []int  `json:"tracks"`
-	} `json:"stream"`
-	FilePath         string    `json:"filePath"`
-	InfoPath         string    `json:"infoPath"`
-	Interval         int       `json:"interval"`
-	Schedule         string    `json:"schedule"`
-	SegmentationRule string    `json:"segmentationRule"`
-	CreatedTime      time.Time `json:"createdTime"`
+	ID               string       `json:"id"`
+	State            string       `json:"state"`
+	Vhost            string       `json:"vhost"`
+	App              string       `json:"app"`
+	Stream           SimpleStream `json:"stream"`
+	FilePath         string       `json:"filePath"`
+	InfoPath         string       `json:"infoPath"`
+	Interval         int64        `json:"interval"`
+	Schedule         string       `json:"schedule"`
+	SegmentationRule string       `json:"segmentationRule"`
+	CreatedTime      Time         `json:"createdTime"`
 }
