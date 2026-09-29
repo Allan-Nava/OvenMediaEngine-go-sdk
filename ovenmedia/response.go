@@ -184,3 +184,48 @@ type ResponseRecording struct {
 	SegmentationRule string       `json:"segmentationRule"`
 	CreatedTime      Time         `json:"createdTime"`
 }
+
+type ResponseScheduledChannel struct {
+	BaseResponseOK
+	Response ScheduledChannelInfo `json:"response"`
+}
+
+// ScheduledChannelInfo is a scheduled channel as OME reports it, with the
+// program on air.
+type ScheduledChannelInfo struct {
+	Stream          ScheduledChannelStream  `json:"stream"`
+	CurrentProgram  *ScheduledProgramState  `json:"currentProgram,omitempty"`
+	FallbackProgram *ScheduledProgramState  `json:"fallbackProgram,omitempty"`
+	Programs        []ScheduledProgramState `json:"programs"`
+}
+
+type ScheduledProgramState struct {
+	Name        string              `json:"name"`
+	Scheduled   Time                `json:"scheduled"`
+	End         Time                `json:"end"`
+	Duration    int64               `json:"duration"`
+	Repeat      bool                `json:"repeat"`
+	State       string              `json:"state"`
+	CurrentItem *ScheduledItemState `json:"currentItem,omitempty"`
+	Items       []ScheduledItem     `json:"items,omitempty"`
+}
+
+type ScheduledItemState struct {
+	URL             string `json:"url"`
+	Start           int64  `json:"start"`
+	Duration        int64  `json:"duration"`
+	CurrentPosition int64  `json:"currentPosition"`
+}
+
+type ResponseMultiplexChannel struct {
+	BaseResponseOK
+	Response MultiplexChannelInfo `json:"response"`
+}
+
+// MultiplexChannelInfo is a multiplex channel with its state ("Pulling",
+// "Playing"...) and, while it waits for inputs, the reason.
+type MultiplexChannelInfo struct {
+	MultiplexChannel
+	State          string `json:"state"`
+	PullingMessage string `json:"pullingMessage"`
+}

@@ -43,3 +43,20 @@ func (o *ovenMedia) SendEvent(ctx context.Context, vhost, app, stream string, bo
 	}
 	return do[BaseResponseOK](ctx, o, http.MethodPost, pathStream(vhost, app, stream)+":sendEvent", body)
 }
+
+// StartHlsDump calls POST .../streams/{stream}:startHlsDump. OME replies with
+// the names of the streams being dumped.
+func (o *ovenMedia) StartHlsDump(ctx context.Context, vhost, app, stream string, body RequestHlsDump) (*ResponseNameList, error) {
+	if err := body.validate(); err != nil {
+		return nil, err
+	}
+	return do[ResponseNameList](ctx, o, http.MethodPost, pathStream(vhost, app, stream)+":startHlsDump", body)
+}
+
+// StopHlsDump calls POST .../streams/{stream}:stopHlsDump.
+func (o *ovenMedia) StopHlsDump(ctx context.Context, vhost, app, stream string, body RequestHlsDumpStop) (*ResponseNameList, error) {
+	if body.OutputStreamName == "" {
+		return nil, invalid("hls dump: outputStreamName is required")
+	}
+	return do[ResponseNameList](ctx, o, http.MethodPost, pathStream(vhost, app, stream)+":stopHlsDump", body)
+}

@@ -142,3 +142,142 @@ func (r RequestRecordingStart) validate() error {
 type RequestRecordingStop struct {
 	ID string `json:"id"`
 }
+
+// ScheduledChannel creates or patches a scheduled channel: a live stream
+// played out from files on a schedule. Stream is required to create one and
+// ignored by a patch, which replaces the programs.
+type ScheduledChannel struct {
+	Stream          *ScheduledChannelStream `json:"stream,omitempty"`
+	FallbackProgram *ScheduledProgram       `json:"fallbackProgram,omitempty"`
+	Programs        []ScheduledProgram      `json:"programs,omitempty"`
+}
+
+type ScheduledChannelStream struct {
+	Name             string          `json:"name"`
+	BypassTranscoder *bool           `json:"bypassTranscoder,omitempty"`
+	VideoTrack       *bool           `json:"videoTrack,omitempty"`
+	AudioTrack       *bool           `json:"audioTrack,omitempty"`
+	AudioMap         []AudioMapEntry `json:"audioMap,omitempty"`
+}
+
+// AudioMapEntry names one audio track of a scheduled channel.
+type AudioMapEntry struct {
+	Name            string `json:"name"`
+	Language        string `json:"language,omitempty"`
+	Characteristics string `json:"characteristics,omitempty"`
+}
+
+// ScheduledProgram is one program of a scheduled channel. Scheduled is sent
+// as written; OME's docs use the form "2023-11-13T20:57:00.000+09". Repeat
+// is only sent when set, so the fallback program keeps OME's default.
+type ScheduledProgram struct {
+	Name      string          `json:"name,omitempty"`
+	Scheduled string          `json:"scheduled,omitempty"`
+	Repeat    *bool           `json:"repeat,omitempty"`
+	Items     []ScheduledItem `json:"items,omitempty"`
+}
+
+// ScheduledItem is one file of a program. Start and Duration are in
+// milliseconds; a Duration of -1 plays to the end of the file.
+type ScheduledItem struct {
+	URL      string `json:"url"`
+	Start    int64  `json:"start"`
+	Duration int64  `json:"duration"`
+}
+
+func (c ScheduledChannel) validate() error {
+	if c.Stream == nil || c.Stream.Name == "" {
+		return invalid("scheduled channel: stream.name is required")
+	}
+	return nil
+}
+
+// MultiplexChannel combines tracks of several streams into one output
+// stream, for example an ABR ladder from separate encoder feeds.
+type MultiplexChannel struct {
+	OutputStream  MultiplexOutputStream   `json:"outputStream"`
+	SourceStreams []MultiplexSourceStream `json:"sourceStreams"`
+	Playlists     []MultiplexPlaylist     `json:"playlists,omitempty"`
+}
+
+type MultiplexOutputStream struct {
+	Name string `json:"name"`
+}
+
+// MultiplexSourceStream is one input, addressed as stream://vhost/app/stream.
+type MultiplexSourceStream struct {
+	Name     string              `json:"name"`
+	URL      string              `json:"url"`
+	TrackMap []MultiplexTrackMap `json:"trackMap,omitempty"`
+}
+
+// MultiplexTrackMap renames a source track; BitrateConf and FramerateConf
+// declare what the track carries, for ABR.
+type MultiplexTrackMap struct {
+	SourceTrackName string  `json:"sourceTrackName"`
+	NewTrackName    string  `json:"newTrackName"`
+	BitrateConf     int64   `json:"bitrateConf,omitempty"`
+	FramerateConf   float64 `json:"framerateConf,omitempty"`
+}
+
+type MultiplexPlaylist struct {
+	Name       string                    `json:"name"`
+	FileName   string                    `json:"fileName"`
+	Options    *MultiplexPlaylistOptions `json:"options,omitempty"`
+	Renditions []MultiplexRendition      `json:"renditions,omitempty"`
+}
+
+type MultiplexPlaylistOptions struct {
+	WebrtcAutoAbr         *bool `json:"webrtcAutoAbr,omitempty"`
+	HlsChunklistPathDepth *int  `json:"hlsChunklistPathDepth,omitempty"`
+}
+
+// MultiplexRendition pairs a video and an audio track by their new names.
+type MultiplexRendition struct {
+	Name  string `json:"name"`
+	Video string `json:"video,omitempty"`
+	Audio string `json:"audio,omitempty"`
+}
+
+func (c MultiplexChannel) validate() error {
+	if c.OutputStream.Name == "" {
+		return invalid("multiplex channel: outputStream.name is required")
+	}
+	if len(c.SourceStreams) == 0 {
+		return invalid("multiplex channel: at least one source stream is required")
+	}
+	for _, s := range c.SourceStreams {
+		if s.Name == "" || s.URL == "" {
+			return invalid("multiplex channel: every source stream needs a name and a url")
+		}
+	}
+	return nil
+}
+
+// RequestHlsDump starts dumping an output stream's LL-HLS files to disk.
+// See the OME HLS dump docs for what OutputPath, InfoFile and UserData hold.
+type RequestHlsDump struct {
+	ID               string   `json:"id"`
+	OutputStreamName string   `json:"outputStreamName"`
+	OutputPath       string   `json:"outputPath,omitempty"`
+	Playlist         []string `json:"playlist,omitempty"`
+	InfoFile         string   `json:"infoFile,omitempty"`
+	UserData         string   `json:"userData,omitempty"`
+}
+
+func (r RequestHlsDump) validate() error {
+	switch {
+	case r.ID == "":
+		return invalid("hls dump: id is required")
+	case r.OutputStreamName == "":
+		return invalid("hls dump: outputStreamName is required")
+	}
+	return nil
+}
+
+// RequestHlsDumpStop stops one dump, or every dump of the output stream when
+// ID is empty.
+type RequestHlsDumpStop struct {
+	OutputStreamName string `json:"outputStreamName"`
+	ID               string `json:"id,omitempty"`
+}

@@ -8,9 +8,10 @@ import (
 	"time"
 )
 
-// Time is a timestamp from OME. It accepts both RFC 3339 offsets
-// ("+09:00") and the colon-less form some OME versions print ("+0900");
-// an empty string or null decodes to the zero time.
+// Time is a timestamp from OME. It accepts RFC 3339 offsets ("+09:00"), the
+// colon-less form some OME versions print ("+0900") and the hour-only form of
+// scheduled channel programs ("+09"); an empty string or null decodes to the
+// zero time.
 type Time struct {
 	time.Time
 }
@@ -18,6 +19,7 @@ type Time struct {
 var timeLayouts = []string{
 	time.RFC3339Nano,
 	"2006-01-02T15:04:05.999999999-0700",
+	"2006-01-02T15:04:05.999999999-07",
 }
 
 func (t *Time) UnmarshalJSON(b []byte) error {

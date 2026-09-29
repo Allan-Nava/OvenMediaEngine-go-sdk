@@ -66,7 +66,8 @@ directive alone; raising the floor means updating the first entry of both CI mat
   - `types.go` — `Time` (OME timestamps) and `FlexInt64` (numbers sent as number or string).
   - `constants.go` — unexported path builders (`pathApp`, `pathAppAction`...) and the enums.
   - One file per API area: `virtualhost.go`, `application.go` (+ output profiles), `stream.go`
-    (+ `SendEvent`), `push.go`, `recording.go`, `stats.go`, `thumbnail.go`.
+    (+ `SendEvent`, HLS dumps), `channel.go` (scheduled and multiplex channels), `push.go`,
+    `recording.go`, `stats.go`, `thumbnail.go`.
   - `request.go` / `response.go` — JSON payloads; request types carry their `validate()`.
   - `header_configurator.go` — `HeaderConfigurator`, for `WithHeaders`.
   - Tests (package `ovenmedia_test`): `fake_test.go` (the fake OME), `ovenmedia_test.go`,
@@ -106,12 +107,15 @@ underlying `http.Client` directly, so resty's headers (the API credentials) aren
    (`omitempty` on every optional field, a `validate()` if something is required), reply type in
    `response.go` embedding `BaseResponseOK`, method on `IOvenMediaClient` + `*ovenMedia`.
 5. An `Example<RequestType>` (or `Example<Type>`) in `example_test.go` with `// Output:`.
-6. Row in the `docs/index.html` endpoint table, README "What's covered", `AUDIT.md` A-20.
+6. Row in the `docs/index.html` endpoint table, README "What's covered", and a read-only call
+   in `test/virtualhost_test.go` if the endpoint only reads.
 
 ## Gotchas (verified against the OME docs, 2026-09)
 
-- Timestamps: some OME versions print `+0900` without the colon. Use `Time`, never `time.Time`:
-  one unparsable field fails the whole `Unmarshal`.
+- Timestamps: some OME versions print `+0900` without the colon, and scheduled channel programs
+  use an hour-only `+09`. Use `Time`, never `time.Time`: one unparsable field fails the whole
+  `Unmarshal`. Request-side `ScheduledProgram.Scheduled` is a plain string, sent as written,
+  because the docs don't say which forms OME parses.
 - Bitrates arrive as numbers in current OME and as strings in older versions: use `FlexInt64`.
 - The push/record stream selector is `trackIds` + `variantNames` today; `tracks` is the older
   name, kept on `SimpleStream` for old servers.
@@ -119,6 +123,10 @@ underlying `http.Client` directly, so resty's headers (the API credentials) aren
 - `:pushes` may answer 204; `GetAllPushes` then returns an empty, non-nil list.
 - Stream creation answers **201**, not 200 — `do` accepts any 2xx.
 - SRT and MPEG-TS pushes send `"streamKey": ""`; only RTMP requires a key.
+- `ScheduledProgram.Repeat` is a `*bool`: a plain `bool` would send `"repeat": false` on the
+  fallback program, which OME otherwise repeats.
+- `StopHlsDump` with an empty ID stops every dump of the output stream; `ID` is `omitempty` so
+  that case sends no `"id"` at all.
 - `SendEvent` defaults `eventFormat` to `id3v2`, the only format OME supports; OME answers 409
   if the stream has no media yet.
 - `resty.NewWithClient(hc)` + `SetTimeout` writes `hc.Timeout`: `WithHTTPClient` without

@@ -246,3 +246,81 @@ func ExampleTime() {
 	fmt.Println(rec.CreatedTime.UTC().Format(time.RFC3339))
 	// Output: 2021-08-31T14:44:44Z
 }
+
+func ExampleScheduledChannel() {
+	client := newClient()
+	ctx := context.Background()
+
+	repeat := true
+	_, err := client.CreateScheduledChannel(ctx, "default", "app", ovenmedia.ScheduledChannel{
+		Stream: &ovenmedia.ScheduledChannelStream{Name: "channel"},
+		FallbackProgram: &ovenmedia.ScheduledProgram{Items: []ovenmedia.ScheduledItem{
+			{URL: "file://video/slate.mp4", Duration: -1}, // -1: to the end of the file
+		}},
+		Programs: []ovenmedia.ScheduledProgram{{
+			Name:      "morning",
+			Scheduled: "2023-11-20T20:57:00.000+09",
+			Repeat:    &repeat,
+			Items:     []ovenmedia.ScheduledItem{{URL: "file://video/1.mp4", Duration: 60000}},
+		}},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	info, _ := client.GetScheduledChannel(ctx, "default", "app", "channel")
+	now := info.Response.CurrentProgram
+	fmt.Println(now.State, now.CurrentItem.URL, now.CurrentItem.CurrentPosition, "ms")
+	// Output: onair file://video/1.mp4 1700 ms
+}
+
+func ExampleMultiplexChannel() {
+	client := newClient()
+	ctx := context.Background()
+
+	// One ABR output from an encoder feed: rename its tracks, declare
+	// their bitrates, and list them in an LL-HLS playlist.
+	_, err := client.CreateMultiplexChannel(ctx, "default", "app", ovenmedia.MultiplexChannel{
+		OutputStream: ovenmedia.MultiplexOutputStream{Name: "abr"},
+		SourceStreams: []ovenmedia.MultiplexSourceStream{{
+			Name: "input1",
+			URL:  "stream://default/app/input1",
+			TrackMap: []ovenmedia.MultiplexTrackMap{
+				{SourceTrackName: "bypass_video", NewTrackName: "input1_video", BitrateConf: 5000000, FramerateConf: 30},
+				{SourceTrackName: "bypass_audio", NewTrackName: "input1_audio", BitrateConf: 128000},
+			},
+		}},
+		Playlists: []ovenmedia.MultiplexPlaylist{{
+			Name:       "LLHLS ABR",
+			FileName:   "abr",
+			Renditions: []ovenmedia.MultiplexRendition{{Name: "input1", Video: "input1_video", Audio: "input1_audio"}},
+		}},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	info, _ := client.GetMultiplexChannel(ctx, "default", "app", "abr")
+	fmt.Println(info.Response.State)
+	// Output: Pulling
+}
+
+func ExampleRequestHlsDump() {
+	client := newClient()
+	ctx := context.Background()
+
+	_, err := client.StartHlsDump(ctx, "default", "app", "stream", ovenmedia.RequestHlsDump{
+		ID:               "dump1",
+		OutputStreamName: "stream",
+		OutputPath:       "/var/dumps/",
+		Playlist:         []string{"llhls.m3u8"},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// An empty ID stops every dump of the output stream.
+	_, err = client.StopHlsDump(ctx, "default", "app", "stream", ovenmedia.RequestHlsDumpStop{OutputStreamName: "stream"})
+	fmt.Println(err)
+	// Output: <nil>
+}

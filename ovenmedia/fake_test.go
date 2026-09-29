@@ -72,6 +72,23 @@ const streamInfoJSON = `{"statusCode":200,"message":"OK","response":{"name":"str
    {"id":1,"name":"Audio","type":"Audio","audio":{"bypass":false,"codec":"AAC","bitrate":"128000","samplerate":48000,"channel":2}}]},
  "outputs":[{"name":"stream","tracks":[],"playlists":[]}]}}`
 
+const scheduledChannelJSON = `{"message":"OK","statusCode":200,"response":{
+ "currentProgram":{"currentItem":{"currentPosition":1700,"duration":60000,"start":0,"url":"file://video/1.mp4"},
+  "duration":-1,"end":"2262-04-12T08:47:16.854+09:00","name":"2","repeat":true,
+  "scheduled":"2023-11-20T20:57:00.000+09:00","state":"onair"},
+ "fallbackProgram":{"items":[{"duration":-1,"start":0,"url":"file://hevc.mov"}],"name":"fallback","repeat":true,"scheduled":"1970-01-01T00:00:00Z"},
+ "programs":[{"name":"2","repeat":true,"scheduled":"2023-11-20T20:57:00.000+09"}],
+ "stream":{"audioTrack":true,"bypassTranscoder":false,"name":"channel","videoTrack":true}}}`
+
+const multiplexChannelJSON = `{"message":"OK","statusCode":200,"response":{
+ "state":"Pulling","pullingMessage":"Multiplex Channel : #default#app/abr: Wait for stream input1",
+ "outputStream":{"name":"abr"},
+ "playlists":[{"fileName":"abr","name":"LLHLS ABR","options":{"hlsChunklistPathDepth":0,"webrtcAutoAbr":true},
+  "renditions":[{"audio":"input1_audio","name":"input1","video":"input1_video"}]}],
+ "sourceStreams":[{"name":"input1","url":"stream://default/app/input1","trackMap":[
+  {"bitrateConf":128000,"newTrackName":"input1_audio","sourceTrackName":"bypass_audio"},
+  {"bitrateConf":5000000,"framerateConf":30,"newTrackName":"input1_video","sourceTrackName":"bypass_video"}]}]}}`
+
 func docRoutes() map[string]reply {
 	r := func(body string) reply { return reply{status: 200, body: body} }
 	const app = "/v1/vhosts/default/apps/app"
@@ -110,6 +127,20 @@ func docRoutes() map[string]reply {
 		"GET /v1/stats/current/vhosts/default":                         r(statsJSON),
 		"GET /v1/stats/current/vhosts/default/apps/app":                r(statsJSON),
 		"GET /v1/stats/current/vhosts/default/apps/app/streams/stream": r(statsJSON),
+
+		"GET " + app + "/scheduledChannels":            r(`{"message":"OK","response":["channel"],"statusCode":200}`),
+		"POST " + app + "/scheduledChannels":           {status: 201, body: `{"message":"Created","statusCode":201}`},
+		"GET " + app + "/scheduledChannels/channel":    r(scheduledChannelJSON),
+		"PATCH " + app + "/scheduledChannels/channel":  {status: 201, body: `{"message":"Created","statusCode":201}`},
+		"DELETE " + app + "/scheduledChannels/channel": r(ok),
+
+		"GET " + app + "/multiplexChannels":        r(`{"message":"OK","response":["abr"],"statusCode":200}`),
+		"POST " + app + "/multiplexChannels":       {status: 201, body: `{"message":"Created","statusCode":201}`},
+		"GET " + app + "/multiplexChannels/abr":    r(multiplexChannelJSON),
+		"DELETE " + app + "/multiplexChannels/abr": r(ok),
+
+		"POST " + app + "/streams/stream:startHlsDump": r(`{"statusCode":200,"message":"OK","response":["stream"]}`),
+		"POST " + app + "/streams/stream:stopHlsDump":  r(`{"statusCode":200,"message":"OK","response":["stream"]}`),
 
 		// served by the publisher, without auth
 		"GET /app/stream/thumb.png": r("\x89PNG\r\n\x1a\n"),

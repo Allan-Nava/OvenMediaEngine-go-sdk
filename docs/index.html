@@ -440,6 +440,11 @@ fmt.<span class="f">Println</span>(res.Response.State) <span class="c">// "ready
             <tr><td class="m">GetStreams(ctx, vhost, app)</td><td><span class="cmd verb">GET</span><span class="cmd">…/apps/{app}/streams</span></td><td class="d">Lists stream names.</td></tr>
             <tr><td class="m">GetStreamInfo / DeleteStream</td><td><span class="cmd verb">GET</span><span class="cmd verb">DELETE</span><span class="cmd">…/streams/{stream}</span></td><td class="d">Input source, connection, tracks and outputs; or deletes the stream.</td></tr>
             <tr><td class="m">SendEvent(ctx, vhost, app, stream, req)</td><td><span class="cmd verb">POST</span><span class="cmd">…/streams/{stream}:sendEvent</span></td><td class="d">Inserts ID3v2 timed metadata.</td></tr>
+            <tr><td class="m">StartHlsDump / StopHlsDump</td><td><span class="cmd verb">POST</span><span class="cmd">…/streams/{stream}:startHlsDump</span></td><td class="d">Dumps an output stream's LL-HLS files to disk; stopping without an ID stops every dump.</td></tr>
+            <tr><td class="m">CreateScheduledChannel / GetScheduledChannels</td><td><span class="cmd verb">POST</span><span class="cmd verb">GET</span><span class="cmd">…/apps/{app}/scheduledChannels</span></td><td class="d">A live channel played out from files on a schedule, with a fallback program; or lists them.</td></tr>
+            <tr><td class="m">GetScheduledChannel / UpdateScheduledChannel / DeleteScheduledChannel</td><td><span class="cmd verb">GET</span><span class="cmd verb">PATCH</span><span class="cmd verb">DELETE</span><span class="cmd">…/scheduledChannels/{channel}</span></td><td class="d">The program and file on air, and the position in it; replaces the schedule; or deletes the channel.</td></tr>
+            <tr><td class="m">CreateMultiplexChannel / GetMultiplexChannels</td><td><span class="cmd verb">POST</span><span class="cmd verb">GET</span><span class="cmd">…/apps/{app}/multiplexChannels</span></td><td class="d">Combines tracks of several streams into one output, e.g. an ABR ladder; or lists them.</td></tr>
+            <tr><td class="m">GetMultiplexChannel / DeleteMultiplexChannel</td><td><span class="cmd verb">GET</span><span class="cmd verb">DELETE</span><span class="cmd">…/multiplexChannels/{channel}</span></td><td class="d">Its state and, while waiting for inputs, why; or deletes it.</td></tr>
             <tr><td class="m">StartPush(ctx, vhost, app, req)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:startPush</span></td><td class="d">Pushes a stream over RTMP, SRT or MPEG-TS. The stream key is only required for RTMP.</td></tr>
             <tr><td class="m">StopPush(ctx, vhost, app, id)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:stopPush</span></td><td class="d">Stops a push.</td></tr>
             <tr><td class="m">GetAllPushes(ctx, vhost, app)</td><td><span class="cmd verb">POST</span><span class="cmd">…/apps/{app}:pushes</span></td><td class="d">Lists pushes with state and byte counters; empty list when there are none.</td></tr>
@@ -508,11 +513,11 @@ fmt.<span class="f">Println</span>(res.Response.State) <span class="c">// "ready
         </div>
         <div class="card reveal">
           <h3>New endpoints</h3>
-          <p>Version, virtual host and application CRUD, output profiles, stream pull and delete, and <code>:sendEvent</code>.</p>
+          <p>Version, virtual host and application CRUD, output profiles, stream pull and delete, <code>:sendEvent</code>, HLS dumps, scheduled and multiplex channels.</p>
         </div>
         <div class="card reveal">
-          <h3>Not yet</h3>
-          <p>Scheduled channels, multiplex channels and HLS dumps. <a href="https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/issues">Open an issue</a> if you need one.</p>
+          <h3>Now also</h3>
+          <p>Scheduled channels, multiplex channels and HLS dumps: every endpoint in the OME REST API v1 reference. <a href="https://github.com/Allan-Nava/OvenMediaEngine-go-sdk/issues">Open an issue</a> if OME adds one.</p>
         </div>
       </div>
     </div>

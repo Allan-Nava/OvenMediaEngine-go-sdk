@@ -55,6 +55,21 @@ type IOvenMediaClient interface {
 	GetStreamInfo(ctx context.Context, vhost, app, stream string) (*ResponseStreamInfo, error)
 	DeleteStream(ctx context.Context, vhost, app, stream string) (*BaseResponseOK, error)
 	SendEvent(ctx context.Context, vhost, app, stream string, body RequestSendEvent) (*BaseResponseOK, error)
+	StartHlsDump(ctx context.Context, vhost, app, stream string, body RequestHlsDump) (*ResponseNameList, error)
+	StopHlsDump(ctx context.Context, vhost, app, stream string, body RequestHlsDumpStop) (*ResponseNameList, error)
+
+	// Scheduled channels
+	CreateScheduledChannel(ctx context.Context, vhost, app string, channel ScheduledChannel) (*BaseResponseOK, error)
+	GetScheduledChannels(ctx context.Context, vhost, app string) (*ResponseNameList, error)
+	GetScheduledChannel(ctx context.Context, vhost, app, channel string) (*ResponseScheduledChannel, error)
+	UpdateScheduledChannel(ctx context.Context, vhost, app, channel string, patch ScheduledChannel) (*BaseResponseOK, error)
+	DeleteScheduledChannel(ctx context.Context, vhost, app, channel string) (*BaseResponseOK, error)
+
+	// Multiplex channels
+	CreateMultiplexChannel(ctx context.Context, vhost, app string, channel MultiplexChannel) (*BaseResponseOK, error)
+	GetMultiplexChannels(ctx context.Context, vhost, app string) (*ResponseNameList, error)
+	GetMultiplexChannel(ctx context.Context, vhost, app, channel string) (*ResponseMultiplexChannel, error)
+	DeleteMultiplexChannel(ctx context.Context, vhost, app, channel string) (*BaseResponseOK, error)
 
 	// Push
 	StartPush(ctx context.Context, vhost, app string, body RequestBodyPush) (*ResponseStartPush, error)

@@ -14,7 +14,7 @@ Ids are stable: when an item is fixed, write `fixed in <sha>` next to it rather 
 
 ## Resolution (branch `fix/audit`, for v0.5.0)
 
-`9470355` is the SDK rewrite, `77dfe17` the CI rebuild. Items marked **open** are still out of scope.
+`9470355` is the SDK rewrite, `77dfe17` the CI rebuild. No item is open.
 
 | id | Status |
 |---|---|
@@ -33,7 +33,7 @@ Ids are stable: when an item is fixed, write `fixed in <sha>` next to it rather 
 | A-17 | fixed in `9470355`: `New` validates the URL, `baseURL` unexported, `getChangePort` removed, `CodecAudio` split from `CodecVideo` |
 | A-18 | fixed in `77dfe17` |
 | A-19 | fixed by the README rewrite |
-| A-20 | **partly open**: version, vhost get/delete, application CRUD, output profiles, stream create/delete and `:sendEvent` added in `9470355`. Scheduled channels, multiplex channels and HLS dumps are still missing |
+| A-20 | fixed: version, vhost get/delete, application CRUD, output profiles, stream create/delete and `:sendEvent` in `9470355`; scheduled channels, multiplex channels and HLS dumps on branch `feat/channels-hls-dump`. The SDK now covers every endpoint in the OME REST API v1 reference |
 | A-21 | fixed in `9470355`: resty v2.17.2, `golang.org/x/net` v0.58.0, Go 1.25; govulncheck reports no vulnerabilities |
 | A-22 | fixed in `77dfe17` |
 | A-23 | fixed in `77dfe17`; `release.yml.old` removed in the cleanup commit |

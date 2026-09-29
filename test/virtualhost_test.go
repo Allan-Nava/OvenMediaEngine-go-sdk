@@ -31,6 +31,12 @@ func Test_ReadOnlyWalk(t *testing.T) {
 			if _, err := c.ListRecordingState(ctx, vh, app); err != nil {
 				t.Errorf("records %s/%s: %v", vh, app, err)
 			}
+			if _, err := c.GetScheduledChannels(ctx, vh, app); err != nil {
+				t.Errorf("scheduled channels %s/%s: %v", vh, app, err)
+			}
+			if _, err := c.GetMultiplexChannels(ctx, vh, app); err != nil {
+				t.Errorf("multiplex channels %s/%s: %v", vh, app, err)
+			}
 			streams, err := c.GetStreams(ctx, vh, app)
 			if err != nil {
 				t.Errorf("streams %s/%s: %v", vh, app, err)
